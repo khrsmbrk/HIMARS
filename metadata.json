@@ -1,0 +1,5 @@
+{
+  "name": "HIMARS",
+  "description": "Himpunan Mahasiswa Program Studi Administrasi Rumah Sakit Universitas Muhammadiyah Lamongan.",
+  "requestFramePermissions": ["camera"]
+}
