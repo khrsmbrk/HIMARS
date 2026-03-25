@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { UserPlus, CheckCircle, AlertCircle, Upload, Phone, Mail, User, Hash, GraduationCap, Briefcase } from 'lucide-react';
 import { useData } from '../../store/DataContext';
 import { kirimKeSheet } from '../../utils/kirimKeSheet';

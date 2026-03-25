@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../store/DataContext';
 import { GraduationCap, Search, Trash2, Edit2, Plus, Linkedin, Phone } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import ConfirmModal from '../../components/ConfirmModal';
 
 export default function AlumniAdmin() {

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Image as ImageIcon, X, ZoomIn, Calendar, MapPin } from 'lucide-react';
 
 const galleryItems = [

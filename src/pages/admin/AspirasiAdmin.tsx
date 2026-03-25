@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../store/DataContext';
 import { MessageSquare, Search, Trash2, CheckCircle, Clock, AlertCircle, MessageCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import ConfirmModal from '../../components/ConfirmModal';
 import { kirimKeSheet } from '../../utils/kirimKeSheet';
 

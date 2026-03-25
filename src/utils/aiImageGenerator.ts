@@ -1,6 +1,13 @@
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+function getAI(): GoogleGenAI {
+  // @ts-ignore
+  const apiKey = process.env.GEMINI_API_KEY || import.meta.env.VITE_GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("GEMINI_API_KEY is not set");
+  }
+  return new GoogleGenAI({ apiKey });
+}
 
 const DB_NAME = "AIGeneratedImagesDB";
 const STORE_NAME = "images";
@@ -74,6 +81,7 @@ export async function generateImage(prompt: string): Promise<string> {
           return;
         }
 
+        const ai = getAI();
         const response = await ai.models.generateContent({
           model: 'gemini-2.5-flash-image',
           contents: {

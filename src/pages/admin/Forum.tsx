@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { MessageSquare, Send, User, Clock, Search, Filter, MoreVertical, ThumbsUp, MessageCircle, Share2, Pin, Image as ImageIcon } from 'lucide-react';
 
 interface Reply {

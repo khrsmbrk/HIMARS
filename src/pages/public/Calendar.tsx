@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Clock, MapPin, Tag, Info } from 'lucide-react';
 
 const events = [
