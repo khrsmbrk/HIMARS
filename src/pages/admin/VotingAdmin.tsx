@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../store/DataContext';
 import { Vote, Plus, Search, Trash2, Edit2, Play, CheckCircle, Clock, Users, BarChart2, X, Upload } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import ConfirmModal from '../../components/ConfirmModal';
 

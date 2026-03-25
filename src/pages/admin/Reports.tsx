@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { FileText, Download, Calendar, Filter, PieChart, TrendingUp, Users, Wallet, CheckCircle, AlertCircle, CheckSquare, Target } from 'lucide-react';
 import { useData } from '../../store/DataContext';
 import { jsPDF } from 'jspdf';

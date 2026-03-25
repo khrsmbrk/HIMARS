@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../store/DataContext';
 import { Vote, CheckCircle, AlertCircle, Clock, Lock } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { kirimKeSheet } from '../../utils/kirimKeSheet';
 
 export default function Voting() {

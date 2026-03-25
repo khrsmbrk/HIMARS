@@ -1,14 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useData, Proker } from '../../store/DataContext';
-import { 
-  Target, Plus, Search, Trash2, Edit2, Play, CheckCircle, 
-  Clock, AlertCircle, Calendar as CalendarIcon, ChevronLeft, 
-  ChevronRight, GripVertical, Info, Inbox, Zap, Share2, 
+import {
+  Target, Plus, Search, Trash2, Edit2, Play, CheckCircle,
+  Clock, AlertCircle, Calendar as CalendarIcon, ChevronLeft,
+  ChevronRight, GripVertical, Info, Inbox, Zap, Share2,
   Mail, MessageSquare, Link as LinkIcon, User as UserIcon,
   Tag, FileText, ExternalLink, RefreshCw
 } from 'lucide-react';
-import { GoogleGenAI } from "@google/genai";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   DndContext,
   DragOverlay,
