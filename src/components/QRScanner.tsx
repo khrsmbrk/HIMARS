@@ -106,13 +106,13 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
       <div className="flex-1 relative flex flex-col items-center justify-center p-6">
         <div className="w-full max-w-sm aspect-square relative">
           {/* Scanning Frame Corners */}
-          <div className="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-himars-peach rounded-tl-3xl z-20"></div>
-          <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-himars-peach rounded-tr-3xl z-20"></div>
-          <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-himars-peach rounded-bl-3xl z-20"></div>
-          <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-himars-peach rounded-br-3xl z-20"></div>
+          <div className="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-emerald-500 rounded-tl-3xl z-20"></div>
+          <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-emerald-500 rounded-tr-3xl z-20"></div>
+          <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-emerald-500 rounded-bl-3xl z-20"></div>
+          <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-emerald-500 rounded-br-3xl z-20"></div>
           
           {/* Scanning Line Animation */}
-          <div className="absolute inset-x-4 top-0 h-1 bg-gradient-to-r from-transparent via-himars-peach to-transparent shadow-[0_0_15px_rgba(249,168,117,0.8)] z-20 animate-[scan_2s_linear_infinite]"></div>
+          <div className="absolute inset-x-4 top-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent shadow-[0_0_15px_rgba(16,185,129,0.8)] z-20 animate-[scan_2s_linear_infinite]"></div>
 
           <div className="absolute inset-0 rounded-3xl overflow-hidden bg-slate-900 border border-white/10">
             {scanMethod === 'camera' ? (
@@ -123,7 +123,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
                 <p className="text-white/60 text-sm font-bold uppercase tracking-widest mb-8">Pilih foto QR Code dari galeri</p>
                 <button 
                   onClick={() => fileInputRef.current?.click()}
-                  className="px-10 py-4 bg-white text-himars-dark rounded-2xl text-xs font-black uppercase tracking-[0.2em] hover:bg-himars-peach hover:text-white transition-all shadow-xl"
+                  className="px-10 py-4 bg-white text-[#0a0a0a] rounded-2xl text-xs font-black uppercase tracking-[0.2em] hover:bg-emerald-500 hover:text-white transition-all shadow-xl"
                 >
                   Pilih Gambar
                 </button>
@@ -140,7 +140,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
 
           {/* Success Overlay */}
           {success && (
-            <div className="absolute inset-0 z-30 bg-himars-green/90 backdrop-blur-md flex flex-col items-center justify-center text-white p-6 text-center rounded-3xl animate-in fade-in">
+            <div className="absolute inset-0 z-30 bg-emerald-600/90 backdrop-blur-md flex flex-col items-center justify-center text-white p-6 text-center rounded-3xl animate-in fade-in">
               <div className="w-24 h-24 bg-white/20 rounded-full flex items-center justify-center mb-6 animate-bounce">
                 <CheckCircle2 className="w-12 h-12 text-white" />
               </div>
@@ -169,7 +169,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
         <button 
           onClick={() => setScanMethod('camera')}
           className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${
-            scanMethod === 'camera' ? 'bg-himars-peach text-white scale-110 shadow-2xl shadow-himars-peach/40' : 'bg-white/10 text-white/40'
+            scanMethod === 'camera' ? 'bg-emerald-500 text-white scale-110 shadow-2xl shadow-emerald-500/40' : 'bg-white/10 text-white/40'
           }`}
         >
           <Camera className="w-8 h-8" />
@@ -177,7 +177,7 @@ export default function QRScanner({ onScan, onClose }: QRScannerProps) {
         <button 
           onClick={() => setScanMethod('upload')}
           className={`w-16 h-16 rounded-full flex items-center justify-center transition-all ${
-            scanMethod === 'upload' ? 'bg-himars-peach text-white scale-110 shadow-2xl shadow-himars-peach/40' : 'bg-white/10 text-white/40'
+            scanMethod === 'upload' ? 'bg-emerald-500 text-white scale-110 shadow-2xl shadow-emerald-500/40' : 'bg-white/10 text-white/40'
           }`}
         >
           <Upload className="w-8 h-8" />

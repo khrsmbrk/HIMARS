@@ -14,11 +14,12 @@ export default function Login() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     
+    // Check users
     const user = data.users.find(u => u.username === username && u.password === password);
 
     if (user) {
-      if (user.role !== 'admin') {
-        setError('Akun Anda belum disetujui sebagai Admin. Silakan hubungi pengurus.');
+      if (user.role === 'member') {
+        setError('Akun Anda belum disetujui. Silakan hubungi pengurus.');
         return;
       }
       
@@ -28,22 +29,55 @@ export default function Login() {
         username: user.username,
         nama: user.nama,
         action: 'Login',
-        details: `Admin ${user.nama} berhasil masuk ke dashboard.`
+        details: `${user.role === 'admin' ? 'Admin' : 'Anggota'} ${user.nama} berhasil masuk.`
       });
 
       localStorage.setItem('isLoggedIn', 'true');
       localStorage.setItem('currentUser', JSON.stringify(user));
-      navigate('/admin/dashboard');
-    } else {
-      setError('Username atau password salah!');
+      
+      if (user.role === 'admin' || user.role === 'superadmin') {
+        navigate('/admin/dashboard');
+      } else if (user.role === 'anggota') {
+        navigate('/anggota/profil');
+      }
+      return;
     }
+
+    // Fallback for older members who might not have a user account yet
+    // Check regular members (anggota) using NIM as username and password
+    const anggota = data.anggota.find(a => a.nim === username && a.nim === password);
+    if (anggota) {
+      const memberUser = {
+        id: anggota.id,
+        username: anggota.nim,
+        password: anggota.nim,
+        nama: anggota.nama,
+        role: 'anggota',
+        department: anggota.departemen || 'Anggota',
+      };
+
+      addActivityLog({
+        userId: anggota.id,
+        username: anggota.nim,
+        nama: anggota.nama,
+        action: 'Login',
+        details: `Anggota ${anggota.nama} berhasil masuk.`
+      });
+
+      localStorage.setItem('isLoggedIn', 'true');
+      localStorage.setItem('currentUser', JSON.stringify(memberUser));
+      navigate('/anggota/profil');
+      return;
+    }
+
+    setError('Username atau password salah!');
   };
 
   return (
-    <div className="min-h-screen bg-liquid flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
         <div className="flex justify-center">
-          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-2xl border-4 border-himars-peach overflow-hidden p-2">
+          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-2xl border-4 border-emerald-500 overflow-hidden p-2">
             <img 
               src={data.settings.logoUrl || undefined} 
               alt={`${data.settings.siteName} Logo`} 
@@ -51,11 +85,14 @@ export default function Login() {
             />
           </div>
         </div>
-        <h2 className="mt-6 text-center text-4xl font-black text-himars-dark uppercase tracking-tighter">
+        <h2 className="mt-6 text-center text-4xl font-black text-slate-900 uppercase tracking-tighter">
           Masuk Dashboard
         </h2>
         <p className="mt-2 text-center text-sm text-slate-600">
           Dashboard Organisasi {data.settings.siteName}
+        </p>
+        <p className="mt-2 text-center text-xs text-slate-500">
+          Anggota dapat masuk menggunakan NIM sebagai Username dan Password.
         </p>
       </div>
 
@@ -87,7 +124,7 @@ export default function Login() {
                   required
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="focus:ring-himars-peach focus:border-himars-peach block w-full pl-10 sm:text-sm border-slate-300 rounded-lg py-3 border"
+                  className="focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-10 sm:text-sm border-slate-300 rounded-lg py-3 border"
                   placeholder="Masukkan username atau email"
                 />
               </div>
@@ -108,7 +145,7 @@ export default function Login() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="focus:ring-himars-peach focus:border-himars-peach block w-full pl-10 sm:text-sm border-slate-300 rounded-lg py-3 border"
+                  className="focus:ring-emerald-500 focus:border-emerald-500 block w-full pl-10 sm:text-sm border-slate-300 rounded-lg py-3 border"
                   placeholder="Masukkan password atau NIM"
                 />
               </div>
@@ -117,7 +154,7 @@ export default function Login() {
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-xl shadow-himars-peach/20 text-sm font-black text-white bg-himars-peach hover:bg-himars-peach/90 transition-all active:scale-95 uppercase tracking-widest"
+                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-xl shadow-emerald-500/20 text-sm font-black text-white bg-emerald-500 hover:bg-emerald-500/90 transition-all active:scale-95 uppercase tracking-widest"
               >
                 Masuk
               </button>
@@ -126,14 +163,20 @@ export default function Login() {
           
           <div className="mt-8 text-center space-y-4">
             <p className="text-sm text-slate-600 font-medium">
-              Belum punya akun?{' '}
-              <Link to="/register" className="font-black text-himars-green hover:text-himars-green/80">
+              Anggota baru?{' '}
+              <Link to="/pendaftaran" className="font-black text-emerald-600 hover:text-emerald-600/80">
+                Cek status pendaftaran di sini →
+              </Link>
+            </p>
+            <p className="text-sm text-slate-600 font-medium">
+              Belum punya akun admin?{' '}
+              <Link to="/register" className="font-black text-emerald-600 hover:text-emerald-600/80">
                 Daftar di sini
               </Link>
             </p>
             <Link 
               to="/"
-              className="inline-flex items-center text-sm font-bold text-slate-400 hover:text-himars-peach transition-colors uppercase tracking-widest"
+              className="inline-flex items-center text-sm font-bold text-slate-400 hover:text-emerald-500 transition-colors uppercase tracking-widest"
             >
               <ArrowLeft className="w-4 h-4 mr-2" /> Kembali ke Beranda
             </Link>

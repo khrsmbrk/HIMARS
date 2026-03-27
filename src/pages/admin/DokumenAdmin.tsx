@@ -57,7 +57,7 @@ export default function DokumenAdmin() {
               <select
                 value={kategori}
                 onChange={(e) => setKategori(e.target.value)}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-himars-peach focus:border-himars-peach"
+                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
               >
                 <option value="umum">Umum</option>
                 <option value="laporan">Laporan</option>
@@ -68,7 +68,7 @@ export default function DokumenAdmin() {
             </div>
 
             <div className="mt-4">
-              <label className="flex justify-center w-full h-32 px-4 transition glass-ios border-2 border-slate-300 border-dashed rounded-xl appearance-none cursor-pointer hover:border-himars-peach focus:outline-none">
+              <label className="flex justify-center w-full h-32 px-4 transition glass-ios border-2 border-slate-300 border-dashed rounded-xl appearance-none cursor-pointer hover:border-emerald-500 focus:outline-none">
                 <span className="flex items-center space-x-2">
                   <Upload className="w-6 h-6 text-slate-400" />
                   <span className="font-medium text-slate-600">
@@ -102,7 +102,7 @@ export default function DokumenAdmin() {
           ) : (
             <div className="space-y-3">
               {data.dokumen.map((doc) => (
-                <div key={doc.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-himars-peach/30 transition-colors group">
+                <div key={doc.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100 hover:border-emerald-500/30 transition-colors group">
                   <div className="flex items-center space-x-4 overflow-hidden">
                     <div className="p-2 glass-ios rounded-lg shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 shrink-0">
                       {getFileIcon(doc.tipe)}
@@ -126,7 +126,7 @@ export default function DokumenAdmin() {
                       className={`p-2 rounded-lg transition-colors ${
                         doc.isPublic 
                           ? 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100' 
-                          : 'text-slate-400 hover:text-himars-peach hover:bg-himars-peach/10'
+                          : 'text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/10'
                       }`}
                       title={doc.isPublic ? "Jadikan Internal" : "Publikasikan ke Website"}
                     >
@@ -135,7 +135,7 @@ export default function DokumenAdmin() {
                     <a 
                       href={doc.url} 
                       download={doc.nama}
-                      className="p-2 text-slate-400 hover:text-himars-peach hover:bg-himars-peach/10 rounded-lg transition-colors"
+                      className="p-2 text-slate-400 hover:text-emerald-500 hover:bg-emerald-500/10 rounded-lg transition-colors"
                       title="Download"
                     >
                       <Download className="w-4 h-4" />

@@ -196,72 +196,70 @@ export default function DriveAdmin() {
 
   return (
     <div className="flex h-[calc(100vh-120px)] bg-slate-50 -m-8 overflow-hidden">
-      {/* Sidebar Navigation */}
-      <div className="w-64 bg-white border-r border-slate-200 flex flex-col p-4">
-        <div className="relative mb-8">
-          <button 
-            onClick={() => setIsNewMenuOpen(!isNewMenuOpen)}
-            className="flex items-center gap-3 px-6 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-all w-full group"
-          >
-            <Plus className="w-6 h-6 text-himars-peach group-hover:rotate-90 transition-transform" />
-            <span className="font-bold text-slate-700">Baru</span>
-          </button>
-
-          <AnimatePresence>
-            {isNewMenuOpen && (
-              <>
-                <div className="fixed inset-0 z-[100]" onClick={() => setIsNewMenuOpen(false)} />
-                <motion.div 
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                  className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-[110] overflow-hidden"
-                >
-                  <button 
-                    onClick={() => { setIsNewMenuOpen(false); setNewItemType('folder'); setIsCreateModalOpen(true); }}
-                    className="w-full px-4 py-3 text-left text-sm font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-3"
-                  >
-                    <FolderPlus className="w-5 h-5 text-amber-400" /> Folder Baru
-                  </button>
-                  <div className="h-px bg-slate-100 my-1" />
-                  <button 
-                    onClick={() => { setIsNewMenuOpen(false); fileInputRef.current?.click(); }}
-                    className="w-full px-4 py-3 text-left text-sm font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-3"
-                  >
-                    <Upload className="w-5 h-5 text-himars-peach" /> Upload File
-                  </button>
-                  <button 
-                    className="w-full px-4 py-3 text-left text-sm font-bold text-slate-400 cursor-not-allowed flex items-center gap-3"
-                  >
-                    <FolderPlus className="w-5 h-5" /> Upload Folder
-                  </button>
-                </motion.div>
-              </>
-            )}
-          </AnimatePresence>
-        </div>
-
-        <nav className="space-y-0.5 flex-1">
-          <button 
-            onClick={() => { setActiveTab('my-drive'); setCurrentFolderId(null); }}
-            className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl text-sm font-bold transition-colors ${activeTab === 'my-drive' ? 'bg-himars-peach/10 text-himars-peach' : 'text-slate-600 hover:bg-slate-50'}`}
-          >
-            <HardDrive className="w-5 h-5" /> Drive Saya
-          </button>
-          <button 
-            onClick={() => setActiveTab('trash')}
-            className={`w-full flex items-center gap-3 px-4 py-2 rounded-xl text-sm font-bold transition-colors ${activeTab === 'trash' ? 'bg-himars-peach/10 text-himars-peach' : 'text-slate-600 hover:bg-slate-50'}`}
-          >
-            <Trash2 className="w-5 h-5" /> Sampah
-          </button>
-        </nav>
-      </div>
-
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Header / Search */}
-        <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0">
-          <div className="flex-1 max-w-2xl relative">
+        <header className="h-16 bg-white border-b border-slate-200 flex items-center px-6 shrink-0 gap-4">
+          {/* Top Bar Buttons */}
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <button 
+                onClick={() => setIsNewMenuOpen(!isNewMenuOpen)}
+                className="p-2.5 bg-himars-peach text-white rounded-xl shadow-sm hover:shadow-md transition-all group"
+                title="Buat baru"
+              >
+                <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform" />
+              </button>
+              <AnimatePresence>
+                {isNewMenuOpen && (
+                  <>
+                    <div className="fixed inset-0 z-[100]" onClick={() => setIsNewMenuOpen(false)} />
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute top-full left-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 py-2 z-[110] overflow-hidden"
+                    >
+                      <button 
+                        onClick={() => { setIsNewMenuOpen(false); setNewItemType('folder'); setIsCreateModalOpen(true); }}
+                        className="w-full px-4 py-3 text-left text-sm font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-3"
+                      >
+                        <FolderPlus className="w-5 h-5 text-amber-400" /> Folder Baru
+                      </button>
+                      <div className="h-px bg-slate-100 my-1" />
+                      <button 
+                        onClick={() => { setIsNewMenuOpen(false); fileInputRef.current?.click(); }}
+                        className="w-full px-4 py-3 text-left text-sm font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-3"
+                      >
+                        <Upload className="w-5 h-5 text-himars-peach" /> Upload File
+                      </button>
+                      <button 
+                        className="w-full px-4 py-3 text-left text-sm font-bold text-slate-400 cursor-not-allowed flex items-center gap-3"
+                      >
+                        <FolderPlus className="w-5 h-5" /> Upload Folder
+                      </button>
+                    </motion.div>
+                  </>
+                )}
+              </AnimatePresence>
+            </div>
+            <button 
+              onClick={() => { setActiveTab('my-drive'); setCurrentFolderId(null); }}
+              className={`p-2.5 rounded-xl transition-colors ${activeTab === 'my-drive' ? 'bg-himars-peach/10 text-himars-peach' : 'text-slate-600 hover:bg-slate-50'}`}
+              title="Drive saya"
+            >
+              <HardDrive className="w-5 h-5" />
+            </button>
+            <button 
+              onClick={() => setActiveTab('trash')}
+              className={`p-2.5 rounded-xl transition-colors ${activeTab === 'trash' ? 'bg-himars-peach/10 text-himars-peach' : 'text-slate-600 hover:bg-slate-50'}`}
+              title="Sampah"
+            >
+              <Trash2 className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="flex-1 w-full mx-auto relative">
             <div className="relative group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-himars-peach transition-colors" />
               <input 
@@ -350,9 +348,10 @@ export default function DriveAdmin() {
           <div className="flex items-center gap-2 text-sm font-bold text-slate-500">
             <button 
               onClick={() => { setActiveTab('my-drive'); setCurrentFolderId(null); }}
-              className="hover:text-himars-peach transition-colors"
+              className="hover:text-himars-peach transition-colors flex items-center"
+              title={activeTab === 'my-drive' ? 'Drive Saya' : activeTab === 'trash' ? 'Sampah' : activeTab === 'shared' ? 'Dibagikan' : 'Aktivitas'}
             >
-              {activeTab === 'my-drive' ? 'Drive Saya' : activeTab === 'trash' ? 'Sampah' : activeTab === 'shared' ? 'Dibagikan' : 'Aktivitas'}
+              {activeTab === 'my-drive' ? <HardDrive className="w-4 h-4" /> : activeTab === 'trash' ? <Trash2 className="w-4 h-4" /> : activeTab === 'shared' ? <Users className="w-4 h-4" /> : <Clock className="w-4 h-4" />}
             </button>
             {activeTab === 'my-drive' && breadcrumbs.map((folder) => (
               <React.Fragment key={folder.id}>
@@ -395,7 +394,7 @@ export default function DriveAdmin() {
         {/* Content Area */}
         <main className="flex-1 overflow-auto p-6">
           {activeTab === 'activity' ? (
-            <div className="max-w-4xl mx-auto space-y-8">
+            <div className="w-full mx-auto space-y-8">
               <h2 className="text-xl font-black text-himars-dark uppercase tracking-tight">Riwayat Aktivitas</h2>
               {data.activityLogs.filter(log => log.action.includes('Folder') || log.action.includes('File') || log.action.includes('Item')).length === 0 ? (
                 <div className="text-center py-20 bg-white rounded-[3rem] border border-slate-100">
@@ -435,7 +434,7 @@ export default function DriveAdmin() {
                 {activeTab === 'trash' ? 'Sampah Kosong' : 'Belum ada item di sini'}
               </h3>
               <p className="text-slate-400 text-sm font-medium mt-2 max-w-xs">
-                {activeTab === 'trash' ? 'Item yang Anda hapus akan muncul di sini.' : 'Gunakan tombol "Baru" untuk menambahkan folder atau file.'}
+                {activeTab === 'trash' ? 'Item yang Anda hapus akan muncul di sini.' : 'Gunakan tombol + di pojok kiri atas untuk menambahkan folder atau file.'}
               </p>
             </div>
           ) : viewMode === 'grid' ? (
@@ -582,7 +581,7 @@ export default function DriveAdmin() {
       <AnimatePresence>
         {isCreateModalOpen && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsCreateModalOpen(false)} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsCreateModalOpen(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
             <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="relative w-full max-w-md bg-white rounded-[2.5rem] p-8 shadow-2xl">
               <h2 className="text-2xl font-black text-himars-dark uppercase tracking-tight mb-6">Folder Baru</h2>
               <input 
@@ -603,8 +602,8 @@ export default function DriveAdmin() {
 
         {isShareModalOpen && itemToManage && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsShareModalOpen(false)} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" />
-            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="relative w-full max-w-lg bg-white rounded-[2.5rem] p-8 shadow-2xl">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsShareModalOpen(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="relative w-full max-w-lg bg-white rounded-[2.5rem] p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
               <h2 className="text-2xl font-black text-himars-dark uppercase tracking-tight mb-2">Bagikan "{itemToManage.name}"</h2>
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">Kelola akses dan izin</p>
               
@@ -690,7 +689,7 @@ export default function DriveAdmin() {
 
         {isMoveModalOpen && itemToManage && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsMoveModalOpen(false)} className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setIsMoveModalOpen(false)} className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" />
             <motion.div initial={{ opacity: 0, scale: 0.9, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9, y: 20 }} className="relative w-full max-w-md bg-white rounded-[2.5rem] p-8 shadow-2xl">
               <h2 className="text-2xl font-black text-himars-dark uppercase tracking-tight mb-6">Pindahkan Item</h2>
               <div className="space-y-2 max-h-64 overflow-auto mb-6 pr-2">

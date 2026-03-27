@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { useData } from '../../store/DataContext';
 import { Box, Plus, Search, Trash2, Edit2, Package, ArrowLeftRight, CheckCircle, XCircle, Clock } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import ConfirmModal from '../../components/ConfirmModal';
-import { kirimKeSheet } from '../../utils/kirimKeSheet';
 
 export default function InventarisAdmin() {
   const { data, addInventaris, updateInventaris, deleteInventaris, addPeminjaman, updatePeminjamanStatus } = useData();
@@ -37,15 +36,6 @@ export default function InventarisAdmin() {
   const handleAddAset = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    await kirimKeSheet({
-      kode_barang: asetForm.kodeBarang,
-      nama_barang: asetForm.namaBarang,
-      kategori: asetForm.kategori,
-      jumlah: asetForm.jumlah,
-      kondisi: asetForm.kondisi,
-      aksi: 'Tambah Aset'
-    }, 'Inventaris & Aset');
-
     addInventaris(asetForm);
     setShowAddAset(false);
     setAsetForm({
@@ -63,15 +53,10 @@ export default function InventarisAdmin() {
     e.preventDefault();
     const barang = data.inventaris.find(i => i.id === pinjamForm.inventarisId);
     
-    await kirimKeSheet({
-      barang: barang?.namaBarang || 'Unknown',
-      peminjam: pinjamForm.peminjam,
-      instansi: pinjamForm.instansi,
-      kontak: pinjamForm.kontak,
-      tanggal_pinjam: pinjamForm.tanggalPinjam,
-      tanggal_kembali: pinjamForm.tanggalKembali,
-      aksi: 'Pinjam Barang'
-    }, 'Inventaris & Aset');
+    if (!barang || barang.jumlah <= 0) {
+      alert('Stok barang tidak mencukupi atau barang tidak ditemukan.');
+      return;
+    }
 
     addPeminjaman({
       ...pinjamForm,
@@ -90,16 +75,6 @@ export default function InventarisAdmin() {
   };
 
   const handleReturn = async (id: number) => {
-    const pinjam = data.peminjaman.find(p => p.id === id);
-    const barang = data.inventaris.find(i => i.id === pinjam?.inventarisId);
-    
-    if (pinjam) {
-      await kirimKeSheet({
-        barang: barang?.namaBarang || 'Unknown',
-        peminjam: pinjam.peminjam,
-        aksi: 'Kembalikan Barang'
-      }, 'Inventaris & Aset');
-    }
     updatePeminjamanStatus(id, 'Dikembalikan');
   };
 
@@ -114,7 +89,7 @@ export default function InventarisAdmin() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="w-full mx-auto">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-black text-himars-dark uppercase tracking-tight">Inventaris & Aset</h1>
@@ -157,7 +132,7 @@ export default function InventarisAdmin() {
             onClick={() => activeTab === 'aset' ? setShowAddAset(true) : setShowAddPinjam(true)}
             className="w-full md:w-auto px-6 py-3 bg-himars-dark text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-himars-dark/90 transition-all flex items-center justify-center gap-2"
           >
-            <Plus className="w-4 h-4" /> Tambah {activeTab === 'aset' ? 'Aset' : 'Peminjaman'}
+            <Plus className="w-4 h-4" /> {activeTab === 'aset' ? 'ASET' : 'PEMINJAMAN'}
           </button>
         </div>
 
@@ -284,11 +259,11 @@ export default function InventarisAdmin() {
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowAddAset(false)}
-              className="absolute inset-0 bg-himars-dark/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             />
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative glass-ios rounded-[3rem] p-10 max-w-md w-full shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 overflow-hidden"
+              className="relative glass-ios rounded-[3rem] p-10 max-w-md w-full shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 overflow-hidden max-h-[90vh] overflow-y-auto"
             >
               <h3 className="text-2xl font-black text-himars-dark uppercase tracking-tight mb-6">Tambah Aset</h3>
               <form onSubmit={handleAddAset} className="space-y-4">
@@ -329,7 +304,7 @@ export default function InventarisAdmin() {
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowAddPinjam(false)}
-              className="absolute inset-0 bg-himars-dark/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             />
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -342,7 +317,9 @@ export default function InventarisAdmin() {
                   <select required value={pinjamForm.inventarisId} onChange={e => setPinjamForm({...pinjamForm, inventarisId: parseInt(e.target.value)})} className="w-full px-4 py-3 bg-slate-50/50 border-none rounded-2xl focus:ring-2 focus:ring-himars-peach font-bold text-sm">
                     <option value={0} disabled>Pilih Barang...</option>
                     {data.inventaris.filter(i => i.kondisi === 'Baik').map(i => (
-                      <option key={i.id} value={i.id}>{i.namaBarang} ({i.kodeBarang})</option>
+                      <option key={i.id} value={i.id} disabled={i.jumlah <= 0}>
+                        {i.namaBarang} ({i.kodeBarang}) - Stok: {i.jumlah}
+                      </option>
                     ))}
                   </select>
                 </div>
@@ -385,14 +362,6 @@ export default function InventarisAdmin() {
         }}
         onConfirm={async () => {
           if (itemToDelete) {
-            const aset = data.inventaris.find(i => i.id === itemToDelete);
-            if (aset) {
-              await kirimKeSheet({
-                kode_barang: aset.kodeBarang,
-                nama_barang: aset.namaBarang,
-                aksi: 'Hapus Aset'
-              }, 'Inventaris & Aset');
-            }
             deleteInventaris(itemToDelete);
           }
         }}

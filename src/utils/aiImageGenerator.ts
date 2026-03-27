@@ -1,6 +1,17 @@
 import { GoogleGenAI } from "@google/genai";
 
-let ai: GoogleGenAI | null = null;
+let aiInstance: GoogleGenAI | null = null;
+
+function getAI() {
+  if (!aiInstance) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY is not defined");
+    }
+    aiInstance = new GoogleGenAI({ apiKey });
+  }
+  return aiInstance;
+}
 
 const DB_NAME = "AIGeneratedImagesDB";
 const STORE_NAME = "images";
@@ -62,9 +73,6 @@ async function processQueue() {
 
 export async function generateImage(prompt: string): Promise<string> {
   const cached = await getCachedImage(prompt);
-    const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) throw new Error('GEMINI_API_KEY not set');
-  if (!ai) ai = new GoogleGenAI({ apiKey });
   if (cached) return cached;
 
   return new Promise((resolve) => {
@@ -77,6 +85,7 @@ export async function generateImage(prompt: string): Promise<string> {
           return;
         }
 
+        const ai = getAI();
         const response = await ai.models.generateContent({
           model: 'gemini-2.5-flash-image',
           contents: {

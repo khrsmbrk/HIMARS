@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { FileText, Download, Calendar, Filter, PieChart, TrendingUp, Users, Wallet, CheckCircle, AlertCircle, CheckSquare, Target } from 'lucide-react';
 import { useData } from '../../store/DataContext';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
-import { kirimKeSheet } from '../../utils/kirimKeSheet';
 
 export default function Reports() {
   const { data } = useData();
@@ -28,30 +27,38 @@ export default function Reports() {
 
   const generatePDF = async () => {
     setIsGenerating(true);
-    
-    // Sync to Google Sheets
-    await kirimKeSheet({
-      jenis_laporan: reportType,
-      periode: period,
-      aksi: 'Generate PDF'
-    }, 'Laporan Otomatis');
 
     setTimeout(() => {
       const doc = new jsPDF() as any;
       const pageWidth = doc.internal.pageSize.getWidth();
       const periodText = formatPeriod(period);
       
-      // Header
-      doc.setFontSize(20);
-      doc.setTextColor(217, 119, 6); // himars-peach
-      doc.text('LAPORAN BULANAN HIMARS', pageWidth / 2, 20, { align: 'center' });
-      
-      doc.setFontSize(12);
-      doc.setTextColor(100);
-      doc.text(`Periode: ${periodText}`, pageWidth / 2, 28, { align: 'center' });
-      
-      doc.setDrawColor(200);
-      doc.line(20, 35, pageWidth - 20, 35);
+      let currentY = 20;
+
+      // Add Kop Surat if available
+      if (data.settings.kopSuratUrl) {
+        try {
+          doc.addImage(data.settings.kopSuratUrl, 'PNG', 20, 10, pageWidth - 40, 30);
+          currentY = 50;
+        } catch (e) {
+          console.error('Failed to add kop surat to PDF', e);
+        }
+      } else {
+        // Fallback Header if no Kop Surat
+        doc.setFontSize(20);
+        doc.setTextColor(217, 119, 6); // himars-peach
+        doc.text('LAPORAN BULANAN HIMARS', pageWidth / 2, currentY, { align: 'center' });
+        currentY += 8;
+        
+        doc.setFontSize(12);
+        doc.setTextColor(100);
+        doc.text(`Periode: ${periodText}`, pageWidth / 2, currentY, { align: 'center' });
+        currentY += 7;
+        
+        doc.setDrawColor(200);
+        doc.line(20, currentY, pageWidth - 20, currentY);
+        currentY += 10;
+      }
 
       if (reportType === 'keuangan') {
         const totalPemasukan = filteredKeuangan
@@ -64,10 +71,10 @@ export default function Reports() {
 
         doc.setFontSize(14);
         doc.setTextColor(0);
-        doc.text('Ringkasan Keuangan', 20, 45);
+        doc.text('Ringkasan Keuangan', 20, currentY);
         
         doc.autoTable({
-          startY: 50,
+          startY: currentY + 5,
           head: [['Kategori', 'Total']],
           body: [
             ['Total Pemasukan', `Rp ${totalPemasukan.toLocaleString('id-ID')}`],
@@ -103,10 +110,10 @@ export default function Reports() {
         
         doc.setFontSize(14);
         doc.setTextColor(0);
-        doc.text('Statistik Organisasi', 20, 45);
+        doc.text('Statistik Organisasi', 20, currentY);
         
         doc.autoTable({
-          startY: 50,
+          startY: currentY + 5,
           head: [['Indikator', 'Jumlah']],
           body: [
             ['Total Anggota Terdaftar', totalAnggota],
@@ -135,7 +142,7 @@ export default function Reports() {
       } else if (reportType === 'presensi') {
         doc.setFontSize(14);
         doc.setTextColor(0);
-        doc.text('Rekap Presensi Anggota', 20, 45);
+        doc.text('Rekap Presensi Anggota', 20, currentY);
 
         const attendanceSummary = data.anggota.map(member => {
           const count = filteredKehadiran.filter(k => k.nama === member.nama).length;
@@ -143,7 +150,7 @@ export default function Reports() {
         });
 
         doc.autoTable({
-          startY: 50,
+          startY: currentY + 5,
           head: [['Nama', 'NIM', 'Jabatan', 'Kehadiran (Bulan Ini)']],
           body: attendanceSummary,
           theme: 'grid',
@@ -152,7 +159,7 @@ export default function Reports() {
       } else if (reportType === 'proker') {
         doc.setFontSize(14);
         doc.setTextColor(0);
-        doc.text('Laporan Status Program Kerja', 20, 45);
+        doc.text('Laporan Status Program Kerja', 20, currentY);
 
         const prokerStats = [
           ['TO DO', data.proker.filter(p => p.status === 'Belum Mulai').length],
@@ -162,7 +169,7 @@ export default function Reports() {
         ];
 
         doc.autoTable({
-          startY: 50,
+          startY: currentY + 5,
           head: [['Status', 'Jumlah']],
           body: prokerStats,
           theme: 'striped',
@@ -185,6 +192,26 @@ export default function Reports() {
         });
       }
 
+      // Add Tanda Tangan if available
+      let finalY = doc.lastAutoTable ? doc.lastAutoTable.finalY + 20 : currentY + 20;
+      
+      // Check if we need a new page for signature
+      if (finalY > doc.internal.pageSize.getHeight() - 60) {
+        doc.addPage();
+        finalY = 20;
+      }
+
+      if (data.settings.tandaTanganUrl) {
+        try {
+          doc.addImage(data.settings.tandaTanganUrl, 'PNG', pageWidth - 80, finalY, 60, 30);
+          if (data.settings.stempelUrl) {
+            doc.addImage(data.settings.stempelUrl, 'PNG', pageWidth - 90, finalY - 5, 40, 40);
+          }
+        } catch (e) {
+          console.error('Failed to add tanda tangan to PDF', e);
+        }
+      }
+
       // Footer
       const footerY = doc.internal.pageSize.getHeight() - 20;
       doc.setFontSize(10);
@@ -198,7 +225,7 @@ export default function Reports() {
   };
 
   return (
-    <div className="p-8 max-w-6xl mx-auto">
+    <div className="p-8 w-full mx-auto">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-black text-slate-800 tracking-tight">Laporan Otomatis</h1>

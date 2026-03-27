@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../store/DataContext';
 import { Vote, CheckCircle, AlertCircle, Clock, Lock } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { kirimKeSheet } from '../../utils/kirimKeSheet';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function Voting() {
   const { data, castVote } = useData();
@@ -70,9 +69,6 @@ export default function Voting() {
     // Record vote locally
     castVote(selectedSession, selectedKandidat, nim);
 
-    // Sync to Google Sheets
-    await kirimKeSheet(voteData, 'E-Voting');
-
     setHasVoted(true);
     setError('');
     
@@ -87,18 +83,24 @@ export default function Voting() {
   };
 
   return (
-    <div className="pt-24 pb-16 min-h-screen bg-liquid">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="pt-24 pb-16 min-h-screen bg-slate-50 relative overflow-hidden">
+      {/* Background Elements */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
+        <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-900/10 blur-[120px] rounded-full mix-blend-multiply"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-orange-900/10 blur-[120px] rounded-full mix-blend-multiply"></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
           <motion.div 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="w-20 h-20 bg-himars-peach/20 rounded-3xl flex items-center justify-center mx-auto mb-6 transform rotate-3"
+            className="w-20 h-20 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6 transform rotate-3 shadow-xl shadow-emerald-500/10"
           >
-            <Vote className="w-10 h-10 text-himars-peach" />
+            <Vote className="w-10 h-10 text-emerald-500" />
           </motion.div>
           <motion.h1 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="text-4xl md:text-5xl font-black text-himars-dark uppercase tracking-tight mb-6"
+            className="text-4xl md:text-5xl font-black text-slate-900 uppercase tracking-tight mb-6"
           >
             E-Voting HIMARS
           </motion.h1>
@@ -113,10 +115,10 @@ export default function Voting() {
         {activeSessions.length === 0 ? (
           <motion.div 
             initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.3 }}
-            className="glass-ios rounded-[3rem] p-12 text-center shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 max-w-2xl mx-auto"
+            className="bg-white rounded-[3rem] p-12 text-center shadow-xl border border-slate-200 backdrop-blur-xl max-w-2xl mx-auto"
           >
-            <Clock className="w-16 h-16 text-slate-300 mx-auto mb-6" />
-            <h3 className="text-2xl font-black text-himars-dark uppercase tracking-tight mb-2">Belum Ada Pemilihan Aktif</h3>
+            <Clock className="w-16 h-16 text-slate-500 mx-auto mb-6" />
+            <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight mb-2">Belum Ada Pemilihan Aktif</h3>
             <p className="text-slate-600">Saat ini tidak ada sesi pemilihan yang sedang berlangsung. Silakan kembali lagi nanti.</p>
           </motion.div>
         ) : (
@@ -126,33 +128,33 @@ export default function Voting() {
                 <motion.div 
                   key="success"
                   initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }}
-                  className="glass-ios rounded-[3rem] p-12 text-center shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40"
+                  className="bg-white rounded-[3rem] p-12 text-center shadow-xl border border-slate-200 backdrop-blur-xl"
                 >
-                  <div className="w-24 h-24 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <CheckCircle className="w-12 h-12 text-emerald-600" />
+                  <div className="w-24 h-24 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <CheckCircle className="w-12 h-12 text-emerald-500" />
                   </div>
-                  <h3 className="text-3xl font-black text-himars-dark uppercase tracking-tight mb-4">Terima Kasih!</h3>
+                  <h3 className="text-3xl font-black text-slate-900 uppercase tracking-tight mb-4">Terima Kasih!</h3>
                   <p className="text-lg text-slate-600">Suara Anda telah berhasil direkam dalam sistem. Satu suara Anda sangat berarti untuk kemajuan HIMARS UMLA.</p>
                 </motion.div>
               ) : (
                 <motion.div 
                   key="form"
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-                  className="glass-ios rounded-[3rem] p-8 md:p-12 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40"
+                  className="bg-white rounded-[3rem] p-8 md:p-12 shadow-xl border border-slate-200 backdrop-blur-xl"
                 >
                   <form onSubmit={handleVote} className="space-y-8">
                     <div>
-                      <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Pilih Sesi Pemilihan</label>
+                      <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Pilih Sesi Pemilihan</label>
                       <div className="grid grid-cols-1 gap-4">
                         {activeSessions.map(session => (
                           <label 
                             key={session.id} 
                             className={`cursor-pointer p-6 rounded-2xl border-2 transition-all flex items-center justify-between ${
-                              selectedSession === session.id ? 'border-himars-peach bg-himars-peach/5' : 'border-slate-100 bg-white/50 hover:border-himars-peach/30'
+                              selectedSession === session.id ? 'border-emerald-500/50 bg-emerald-500/5' : 'border-slate-200 bg-slate-50 hover:border-emerald-500/30'
                             }`}
                           >
                             <div>
-                              <h4 className="text-lg font-black text-himars-dark uppercase">{session.judul}</h4>
+                              <h4 className="text-lg font-black text-slate-900 uppercase">{session.judul}</h4>
                               <p className="text-xs font-bold text-slate-500 mt-1">Berakhir: {session.tanggalSelesai}</p>
                             </div>
                             <input 
@@ -167,7 +169,7 @@ export default function Voting() {
                                 setEventCode('');
                                 setError('');
                               }}
-                              className="w-5 h-5 text-himars-peach focus:ring-himars-peach"
+                              className="w-5 h-5 text-emerald-500 focus:ring-emerald-500 bg-white border-slate-300"
                             />
                           </label>
                         ))}
@@ -175,8 +177,8 @@ export default function Voting() {
                     </div>
 
                     {selectedSession && !isEventCodeVerified && (
-                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
-                        <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="bg-slate-50 p-8 rounded-3xl border border-slate-200">
+                        <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
                           <Lock className="w-4 h-4" /> Masukkan Kode Akses Acara
                         </label>
                         <div className="flex flex-col md:flex-row gap-4">
@@ -185,13 +187,13 @@ export default function Voting() {
                             required 
                             value={eventCode} 
                             onChange={e => setEventCode(e.target.value.toUpperCase())} 
-                            className="flex-1 px-6 py-4 bg-white border-none rounded-2xl focus:ring-2 focus:ring-himars-peach font-mono font-bold text-lg tracking-widest uppercase" 
+                            className="flex-1 px-6 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/50 font-mono font-bold text-lg tracking-widest uppercase text-slate-900 outline-none placeholder:text-slate-400" 
                             placeholder="KODE ACARA" 
                           />
                           <button 
                             type="button"
                             onClick={handleVerifyEventCode}
-                            className="px-8 py-4 bg-himars-dark text-white rounded-2xl font-black uppercase tracking-[0.2em] text-sm shadow-xl hover:bg-himars-dark/90 transition-all flex items-center justify-center gap-2"
+                            className="px-8 py-4 bg-emerald-500 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-sm shadow-xl hover:bg-emerald-600 transition-all flex items-center justify-center gap-2"
                           >
                             Verifikasi
                           </button>
@@ -207,13 +209,13 @@ export default function Voting() {
 
                     {selectedSession && isEventCodeVerified && (
                       <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
-                        <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Pilih Kandidat</label>
+                        <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Pilih Kandidat</label>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {data.voting.find(v => v.id === selectedSession)?.kandidat.map((k, idx) => (
                             <label 
                               key={k.id} 
                               className={`cursor-pointer p-6 rounded-3xl border-2 transition-all relative overflow-hidden ${
-                                selectedKandidat === k.id ? 'border-himars-peach bg-himars-peach/5 shadow-lg shadow-himars-peach/10' : 'border-slate-100 bg-white/50 hover:border-himars-peach/30'
+                                selectedKandidat === k.id ? 'border-emerald-500/50 bg-emerald-500/5 shadow-lg shadow-emerald-500/10' : 'border-slate-200 bg-slate-50 hover:border-emerald-500/30'
                               }`}
                             >
                               <div className="absolute top-4 right-4">
@@ -223,27 +225,27 @@ export default function Voting() {
                                   value={k.id} 
                                   checked={selectedKandidat === k.id}
                                   onChange={() => setSelectedKandidat(k.id)}
-                                  className="w-6 h-6 text-himars-peach focus:ring-himars-peach"
+                                  className="w-6 h-6 text-emerald-500 focus:ring-emerald-500 bg-white border-slate-300"
                                 />
                               </div>
-                              <span className="text-[10px] font-black text-himars-peach uppercase tracking-widest mb-2 block">Paslon {idx + 1}</span>
+                              <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2 block">Paslon {idx + 1}</span>
                               <div className="flex items-center gap-4 mb-6">
                                 {k.foto ? (
                                   <img src={k.foto || undefined} alt={k.nama} className="w-16 h-16 rounded-full object-cover border-2 border-slate-200" />
                                 ) : (
-                                  <div className="w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center text-slate-400 text-xs font-bold">Foto</div>
+                                  <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center text-slate-500 text-xs font-bold border border-slate-200">Foto</div>
                                 )}
-                                <h4 className="text-xl font-black text-himars-dark uppercase">{k.nama}</h4>
+                                <h4 className="text-xl font-black text-slate-900 uppercase">{k.nama}</h4>
                               </div>
                               
                               <div className="space-y-4">
                                 <div>
-                                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Visi</p>
-                                  <p className="text-sm text-slate-700 leading-relaxed">{k.visi}</p>
+                                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Visi</p>
+                                  <p className="text-sm text-slate-600 leading-relaxed">{k.visi}</p>
                                 </div>
                                 <div>
-                                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Misi</p>
-                                  <p className="text-sm text-slate-700 leading-relaxed">{k.misi}</p>
+                                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-1">Misi</p>
+                                  <p className="text-sm text-slate-600 leading-relaxed">{k.misi}</p>
                                 </div>
                               </div>
                             </label>
@@ -253,8 +255,8 @@ export default function Voting() {
                     )}
 
                     {selectedKandidat && isEventCodeVerified && (
-                      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-slate-50 p-8 rounded-3xl border border-slate-100">
-                        <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="bg-slate-50 p-8 rounded-3xl border border-slate-200">
+                        <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-4 flex items-center gap-2">
                           <Lock className="w-4 h-4" /> Masukkan NIM Anda
                         </label>
                         <div className="flex flex-col md:flex-row gap-4">
@@ -263,12 +265,12 @@ export default function Voting() {
                             required 
                             value={nim} 
                             onChange={e => setNim(e.target.value.toUpperCase())} 
-                            className="flex-1 px-6 py-4 bg-white border-none rounded-2xl focus:ring-2 focus:ring-himars-peach font-mono font-bold text-lg tracking-widest uppercase" 
+                            className="flex-1 px-6 py-4 bg-white border border-slate-200 rounded-2xl focus:ring-2 focus:ring-emerald-500/50 font-mono font-bold text-lg tracking-widest uppercase text-slate-900 outline-none placeholder:text-slate-400" 
                             placeholder="CONTOH: 123456789" 
                           />
                           <button 
                             type="submit" 
-                            className="px-8 py-4 bg-himars-peach text-white rounded-2xl font-black uppercase tracking-[0.2em] text-sm shadow-xl shadow-himars-peach/20 hover:bg-himars-peach/90 transition-all flex items-center justify-center gap-2"
+                            className="px-8 py-4 bg-emerald-500 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-sm shadow-xl shadow-emerald-500/20 hover:bg-emerald-600 transition-all flex items-center justify-center gap-2"
                           >
                             <Vote className="w-5 h-5" /> Gunakan Hak Suara
                           </button>

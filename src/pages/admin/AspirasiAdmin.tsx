@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { useData } from '../../store/DataContext';
 import { MessageSquare, Search, Trash2, CheckCircle, Clock, AlertCircle, MessageCircle } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import ConfirmModal from '../../components/ConfirmModal';
-import { kirimKeSheet } from '../../utils/kirimKeSheet';
 
 export default function AspirasiAdmin() {
   const { data, updateAspirasiStatus, deleteAspirasi } = useData();
@@ -22,17 +21,6 @@ export default function AspirasiAdmin() {
   const handleTanggapanSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (selectedAspirasi !== null) {
-      const aspirasi = data.aspirasi.find(a => a.id === selectedAspirasi);
-      if (aspirasi) {
-        await kirimKeSheet({
-          nama: aspirasi.nama || 'Anonim',
-          kategori: aspirasi.kategori,
-          pesan: aspirasi.pesan,
-          tanggapan: tanggapan,
-          status: 'Selesai',
-          aksi: 'Tanggapi'
-        }, 'Kotak Aspirasi');
-      }
       updateAspirasiStatus(selectedAspirasi, 'Selesai', tanggapan);
       setShowTanggapanModal(false);
       setSelectedAspirasi(null);
@@ -41,21 +29,11 @@ export default function AspirasiAdmin() {
   };
 
   const handleUpdateStatus = async (id: number, status: string) => {
-    const aspirasi = data.aspirasi.find(a => a.id === id);
-    if (aspirasi) {
-      await kirimKeSheet({
-        nama: aspirasi.nama || 'Anonim',
-        kategori: aspirasi.kategori,
-        pesan: aspirasi.pesan,
-        status_baru: status,
-        aksi: 'Update Status'
-      }, 'Kotak Aspirasi');
-    }
     updateAspirasiStatus(id, status as any);
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="w-full mx-auto">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-black text-himars-dark uppercase tracking-tight">Kotak Aspirasi</h1>
@@ -180,11 +158,11 @@ export default function AspirasiAdmin() {
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => { setShowTanggapanModal(false); setSelectedAspirasi(null); setTanggapan(''); }}
-              className="absolute inset-0 bg-himars-dark/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             />
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative glass-ios rounded-[3rem] p-10 max-w-md w-full shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 overflow-hidden"
+              className="relative glass-ios rounded-[3rem] p-10 max-w-md w-full shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 overflow-hidden max-h-[90vh] overflow-y-auto"
             >
               <h3 className="text-2xl font-black text-himars-dark uppercase tracking-tight mb-6">Berikan Tanggapan</h3>
               <form onSubmit={handleTanggapanSubmit} className="space-y-4">
@@ -207,15 +185,6 @@ export default function AspirasiAdmin() {
         }}
         onConfirm={async () => {
           if (itemToDelete) {
-            const aspirasi = data.aspirasi.find(a => a.id === itemToDelete);
-            if (aspirasi) {
-              await kirimKeSheet({
-                nama: aspirasi.nama || 'Anonim',
-                kategori: aspirasi.kategori,
-                pesan: aspirasi.pesan,
-                aksi: 'Hapus'
-              }, 'Kotak Aspirasi');
-            }
             deleteAspirasi(itemToDelete);
           }
         }}

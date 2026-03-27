@@ -166,7 +166,7 @@ Gunakan bahasa Indonesia yang baku dan resmi.`;
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
           />
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 20 }}
@@ -176,11 +176,11 @@ Gunakan bahasa Indonesia yang baku dan resmi.`;
           >
             <div className="px-8 py-6 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-himars-peach/20 flex items-center justify-center text-himars-peach">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center text-emerald-600">
                   <Sparkles className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="font-black text-himars-dark uppercase tracking-tight">AI Surat Generator</h2>
+                  <h2 className="font-black text-slate-900 uppercase tracking-tight">AI Surat Generator</h2>
                   <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Buat surat otomatis dengan AI</p>
                 </div>
               </div>
@@ -202,12 +202,12 @@ Gunakan bahasa Indonesia yang baku dan resmi.`;
                     value={prompt}
                     onChange={(e) => setPrompt(e.target.value)}
                     placeholder="Contoh: Buatkan surat keterangan aktif organisasi untuk mahasiswa bernama Budi Santoso, NIM 12345, prodi S1 ARS, keperluan untuk beasiswa."
-                    className="w-full h-40 px-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-himars-peach focus:ring-0 resize-none font-medium"
+                    className="w-full h-40 px-4 py-3 bg-slate-50 border-2 border-slate-100 rounded-2xl focus:border-emerald-500 focus:ring-0 resize-none font-medium"
                   />
                   <button
                     onClick={handleGenerate}
                     disabled={!prompt || isGenerating}
-                    className="w-full py-4 bg-himars-peach text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-himars-peach/90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                    className="w-full py-4 bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-widest text-xs hover:bg-emerald-700 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
                   >
                     {isGenerating ? (
                       <>
@@ -233,7 +233,7 @@ Gunakan bahasa Indonesia yang baku dan resmi.`;
                       </button>
                       <button
                         onClick={handlePrint}
-                        className="px-4 py-2 text-xs font-bold text-white bg-himars-dark rounded-xl hover:bg-himars-dark/90 transition-colors flex items-center gap-2"
+                        className="px-4 py-2 text-xs font-bold text-white bg-slate-900 rounded-xl hover:bg-slate-800 transition-colors flex items-center gap-2"
                       >
                         <Printer className="w-4 h-4" /> Cetak / PDF
                       </button>

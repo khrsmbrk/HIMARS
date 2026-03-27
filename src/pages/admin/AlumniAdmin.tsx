@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../store/DataContext';
 import { GraduationCap, Search, Trash2, Edit2, Plus, Linkedin, Phone } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import ConfirmModal from '../../components/ConfirmModal';
 
 export default function AlumniAdmin() {
@@ -15,6 +15,8 @@ export default function AlumniAdmin() {
   const [formData, setFormData] = useState({
     nama: '',
     nim: '',
+    angkatan: '',
+    tahunLulus: '',
     tahunJabatan: '',
     jabatanTerakhir: '',
     kontak: '',
@@ -34,6 +36,8 @@ export default function AlumniAdmin() {
     setFormData({
       nama: '',
       nim: '',
+      angkatan: '',
+      tahunLulus: '',
       tahunJabatan: '',
       jabatanTerakhir: '',
       kontak: '',
@@ -46,6 +50,8 @@ export default function AlumniAdmin() {
     setFormData({
       nama: item.nama,
       nim: item.nim,
+      angkatan: item.angkatan || '',
+      tahunLulus: item.tahunLulus || '',
       tahunJabatan: item.tahunJabatan,
       jabatanTerakhir: item.jabatanTerakhir,
       kontak: item.kontak,
@@ -59,11 +65,12 @@ export default function AlumniAdmin() {
   const filteredAlumni = data.alumni.filter(item => 
     item.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.tahunJabatan.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.jabatanTerakhir.toLowerCase().includes(searchTerm.toLowerCase())
+    item.jabatanTerakhir.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (item.angkatan && item.angkatan.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="w-full mx-auto">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-black text-himars-dark uppercase tracking-tight">Database Alumni</h1>
@@ -77,7 +84,7 @@ export default function AlumniAdmin() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
             <input
               type="text"
-              placeholder="Cari nama, tahun, atau jabatan..."
+              placeholder="Cari nama, angkatan, tahun, atau jabatan..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-4 py-3 bg-slate-50/50 border-none rounded-2xl focus:ring-2 focus:ring-himars-peach font-bold text-sm"
@@ -86,12 +93,12 @@ export default function AlumniAdmin() {
           <button
             onClick={() => {
               setEditingId(null);
-              setFormData({ nama: '', nim: '', tahunJabatan: '', jabatanTerakhir: '', kontak: '', pekerjaanSekarang: '', linkedin: '' });
+              setFormData({ nama: '', nim: '', angkatan: '', tahunLulus: '', tahunJabatan: '', jabatanTerakhir: '', kontak: '', pekerjaanSekarang: '', linkedin: '' });
               setShowAdd(true);
             }}
             className="w-full md:w-auto px-6 py-3 bg-himars-dark text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-himars-dark/90 transition-all flex items-center justify-center gap-2"
           >
-            <Plus className="w-4 h-4" /> Tambah Alumni
+            <Plus className="w-4 h-4" /> ALUMNI
           </button>
         </div>
 
@@ -114,7 +121,19 @@ export default function AlumniAdmin() {
 
                 <div className="mb-4">
                   <h3 className="text-xl font-black text-himars-dark uppercase tracking-tight line-clamp-1">{item.nama}</h3>
-                  <p className="text-xs font-bold text-slate-500">{item.nim}</p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <p className="text-xs font-bold text-slate-500">{item.nim}</p>
+                    {item.angkatan && (
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest bg-slate-100 px-2 py-0.5 rounded-md">
+                        Angkatan {item.angkatan}
+                      </span>
+                    )}
+                    {item.tahunLulus && (
+                      <span className="text-[10px] font-black text-himars-peach uppercase tracking-widest bg-himars-peach/10 px-2 py-0.5 rounded-md">
+                        Lulus {item.tahunLulus}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="space-y-3 mb-6">
@@ -167,7 +186,7 @@ export default function AlumniAdmin() {
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => { setShowAdd(false); setEditingId(null); }}
-              className="absolute inset-0 bg-himars-dark/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             />
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -187,6 +206,16 @@ export default function AlumniAdmin() {
                   <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Tahun Jabatan</label>
                     <input type="text" required value={formData.tahunJabatan} onChange={e => setFormData({...formData, tahunJabatan: e.target.value})} className="w-full px-4 py-3 bg-slate-50/50 border-none rounded-2xl focus:ring-2 focus:ring-himars-peach font-bold text-sm" placeholder="2022/2023" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Angkatan</label>
+                    <input type="text" value={formData.angkatan} onChange={e => setFormData({...formData, angkatan: e.target.value})} className="w-full px-4 py-3 bg-slate-50/50 border-none rounded-2xl focus:ring-2 focus:ring-himars-peach font-bold text-sm" placeholder="2019" />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Tahun Lulus</label>
+                    <input type="text" value={formData.tahunLulus} onChange={e => setFormData({...formData, tahunLulus: e.target.value})} className="w-full px-4 py-3 bg-slate-50/50 border-none rounded-2xl focus:ring-2 focus:ring-himars-peach font-bold text-sm" placeholder="2023" />
                   </div>
                 </div>
                 <div>

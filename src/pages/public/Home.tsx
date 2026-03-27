@@ -23,29 +23,29 @@ export default function Home() {
   const yHero = useTransform(scrollYProgress, [0, 1], [0, 300]);
   const opacityHero = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
-  const pillars = [
-    {
-      title: "Struktur Organisasi",
-      description: "Mengenal lebih dekat para pengurus HIMARS Administrasi Rumah Sakit periode ini.",
-      path: "/struktur",
-      icon: Users,
-      prompt: "Indonesian university students wearing olive green uniform shirts, organizing an event, holding clipboards and talking. High quality, cinematic lighting, realistic, photography."
-    },
-    {
-      title: "Berita",
-      description: "Ikuti perkembangan terbaru, kegiatan, dan artikel menarik dari program studi kami.",
-      path: "/blog",
-      icon: Newspaper,
-      prompt: "Close up of Indonesian university students wearing olive green uniform shirts, working on laptops together. High quality, cinematic lighting, realistic, photography."
-    },
-    {
-      title: "Dokumen Publik",
-      description: "Akses laporan kegiatan, transparansi keuangan, dan dokumen publik lainnya.",
-      path: "/dokumen",
-      icon: FileText,
-      prompt: "Indonesian university students wearing olive green uniform shirts, presenting in front of a class. High quality, cinematic lighting, realistic, photography."
-    }
-  ];
+    const pillars = [
+      {
+        title: "Struktur Organisasi",
+        description: "Mengenal lebih dekat para pengurus HIMARS Administrasi Rumah Sakit periode ini.",
+        path: "/struktur",
+        icon: Users,
+        prompt: "Indonesian university students wearing olive green uniform shirts, organizing an event, holding clipboards and talking. High quality, cinematic lighting, realistic, photography."
+      },
+      {
+        title: "Berita & Informasi",
+        description: "Ikuti perkembangan terbaru, kegiatan, dan artikel menarik dari program studi kami.",
+        path: "/blog",
+        icon: Newspaper,
+        prompt: "Close up of Indonesian university students wearing olive green uniform shirts, working on laptops together. High quality, cinematic lighting, realistic, photography."
+      },
+      {
+        title: "Dokumen Publik",
+        description: "Akses laporan kegiatan, transparansi keuangan, dan dokumen publik lainnya.",
+        path: "/dokumen",
+        icon: FileText,
+        prompt: "Indonesian university students wearing olive green uniform shirts, presenting in front of a class. High quality, cinematic lighting, realistic, photography."
+      }
+    ];
 
   const renderSection = (sectionId: string) => {
     switch (sectionId) {
@@ -56,38 +56,27 @@ export default function Home() {
               <img 
                 src={data.settings.heroImageUrl || undefined}
                 alt="Hero Background"
-                className="w-full h-full object-cover opacity-10"
+                className="w-full h-full object-cover opacity-30"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#fffaf5] via-[#fffaf5]/80 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent"></div>
             </motion.div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-20 text-center flex flex-col items-center">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-20 flex flex-col md:flex-row items-center justify-between gap-12">
               <motion.div 
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
+                initial={{ opacity: 0, x: -50 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 1, ease: "easeOut" }}
-                className="max-w-4xl flex flex-col items-center"
+                className="max-w-2xl flex flex-col items-start text-left"
               >
-                <motion.span 
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.5, duration: 0.5 }}
-                  className="inline-block px-4 py-1.5 bg-orange-50 text-orange-600 rounded-full text-[10px] font-black uppercase tracking-widest mb-8 border border-orange-100"
-                >
-                  {data.settings.siteName} UMLA
-                </motion.span>
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-slate-900 leading-[1.1] tracking-tighter mb-8">
-                  {data.settings.heroTitle.split(' ').map((word, i) => (
-                    <React.Fragment key={i}>
-                      {word === 'Administrator' ? <span className="text-orange-600">{word}</span> : word}{' '}
-                    </React.Fragment>
-                  ))}
+                  Inovasi dalam <span className="text-orange-500">Manajemen</span>,<br />
+                  Empati dalam <span className="text-orange-500">Pelayanan</span>.
                 </h1>
-                <p className="text-lg md:text-xl text-slate-600 font-medium mb-12 max-w-2xl leading-relaxed">
-                  {data.settings.heroSubtitle}
+                <p className="text-lg md:text-xl text-slate-600 font-medium mb-12 max-w-xl leading-relaxed">
+                  HIMARS Universitas Muhammadiyah Lamongan hadir sebagai wadah pengembangan mahasiswa Administrasi Rumah Sakit yang unggul, terintegrasi dengan nilai-nilai keislaman dan inovasi layanan kesehatan terkini.
                 </p>
-                <div className="flex flex-wrap justify-center gap-4">
+                <div className="flex flex-wrap justify-start gap-4">
                   <Link 
                     to="/blog" 
                     className="group inline-flex items-center justify-center px-8 py-4 bg-orange-600 text-white rounded-full font-bold text-sm shadow-lg shadow-orange-600/20 hover:bg-orange-700 transition-all active:scale-95"
@@ -97,10 +86,36 @@ export default function Home() {
                   </Link>
                   <Link 
                     to="/profil" 
-                    className="inline-flex items-center justify-center px-8 py-4 bg-white text-slate-700 rounded-full font-bold text-sm border border-slate-200 shadow-sm hover:bg-slate-50 hover:text-slate-900 transition-all active:scale-95"
+                    className="inline-flex items-center justify-center px-8 py-4 bg-slate-100 text-slate-900 rounded-full font-bold text-sm border border-slate-200 shadow-sm hover:bg-slate-200 transition-all active:scale-95 backdrop-blur-sm"
                   >
                     Tentang Kami
                   </Link>
+                </div>
+              </motion.div>
+
+              <motion.div 
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
+                className="hidden lg:flex flex-col gap-6"
+              >
+                <div className="flex gap-6">
+                  <div className="w-64 h-80 rounded-3xl overflow-hidden relative shadow-2xl group">
+                    <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Medical Student" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    <div className="absolute bottom-6 left-6 right-6">
+                      <h3 className="text-white font-bold text-lg mb-1">Pendidikan</h3>
+                      <p className="text-slate-300 text-sm">Pengembangan Ilmu</p>
+                    </div>
+                  </div>
+                  <div className="w-64 h-80 rounded-3xl overflow-hidden relative shadow-2xl group mt-12">
+                    <img src="https://images.unsplash.com/photo-1551076805-e18690c5e561?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" alt="Hospital Administration" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+                    <div className="absolute bottom-6 left-6 right-6">
+                      <h3 className="text-white font-bold text-lg mb-1">Manajemen</h3>
+                      <p className="text-slate-300 text-sm">Tata Kelola RS</p>
+                    </div>
+                  </div>
                 </div>
               </motion.div>
             </div>
@@ -111,9 +126,9 @@ export default function Home() {
           <section key="stats" className="py-24 glass-ios border-y border-white/40 relative z-20">
             <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12">
               {[
-                { icon: ShieldCheck, color: "text-himars-peach", title: "Integritas", desc: "Menjunjung tinggi nilai kejujuran dan etika profesi." },
-                { icon: Award, color: "text-himars-green", title: "Prestasi", desc: "Mendorong mahasiswa untuk unggul di bidang akademik dan non-akademik." },
-                { icon: Sparkles, color: "text-himars-peach", title: "Inovasi", desc: "Beradaptasi dengan perkembangan teknologi kesehatan modern." }
+                { icon: Users, color: "text-himars-peach", title: "Total Anggota", desc: `${data.anggota.length} Mahasiswa Aktif` },
+                { icon: Award, color: "text-himars-green", title: "Program Kerja", desc: `${data.proker.length} Agenda & Kegiatan` },
+                { icon: Newspaper, color: "text-himars-peach", title: "Berita & Acara", desc: `${data.news.length + data.events.length} Publikasi Terbaru` }
               ].map((feature, i) => (
                 <motion.div 
                   key={i}
@@ -167,12 +182,8 @@ export default function Home() {
                 >
                   <span className="text-himars-peach font-bold tracking-widest uppercase text-xs mb-4 block">Visi & Misi</span>
                   <h2 className="font-serif text-4xl md:text-6xl text-himars-dark mb-8 leading-tight">
-                    {data.settings.visiMisiTitle.split(' ').map((word, i) => (
-                      <React.Fragment key={i}>
-                        {word === 'Ekselensi' ? <span className="italic font-light">{word}</span> : word}{' '}
-                        {i === 1 && <br />}
-                      </React.Fragment>
-                    ))}
+                    Mewujudkan <span className="italic font-light">Ekselensi</span> <br />
+                    dalam Administrasi RS.
                   </h2>
                   <div className="space-y-8">
                     <motion.div 
@@ -216,8 +227,8 @@ export default function Home() {
                 >
                   <span className="text-himars-green font-bold tracking-widest uppercase text-xs mb-4 block">Navigasi Utama</span>
                   <h2 className="font-serif text-4xl md:text-6xl text-himars-dark leading-tight">
-                    Pilar utama <br className="hidden md:block" />
-                    <span className="italic font-light">organisasi</span> kami.
+                    Pilar Utama <br className="hidden md:block" />
+                    <span className="italic font-light">Organisasi</span> Kami.
                   </h2>
                 </motion.div>
                 <motion.div
@@ -232,40 +243,59 @@ export default function Home() {
                 </motion.div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+              <div className="flex h-[500px] md:h-[600px] gap-2 md:gap-4 overflow-hidden rounded-[2rem]">
                 {pillars.map((pillar, index) => (
                   <motion.div
                     key={index}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
+                    initial={{ opacity: 0, y: 50 }}
+                    whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: "-100px" }}
                     transition={{ delay: index * 0.1, duration: 0.6 }}
-                    className="group cursor-pointer"
+                    className="group relative flex-1 hover:flex-[3] transition-all duration-700 ease-in-out cursor-pointer overflow-hidden rounded-2xl md:rounded-[2rem]"
                   >
-                    <Link to={pillar.path}>
-                      <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden mb-8 shadow-2xl shadow-slate-200">
-                        <img 
-                          src={data.settings.pillarImages[index] || `https://picsum.photos/seed/pillar${index}/800/1000`}
-                          alt={pillar.title}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000"
-                          referrerPolicy="no-referrer"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                        <div className="absolute bottom-8 left-8 right-8 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 text-center">
-                          <pillar.icon className="w-12 h-12 text-white mx-auto mb-4" />
-                          <span className="text-white font-bold uppercase tracking-widest text-xs">
-                            Buka Halaman
+                    <Link to={pillar.path} className="block w-full h-full">
+                      <img 
+                        src={data.settings.pillarImages[index] || `https://picsum.photos/seed/pillar${index}/800/1000`}
+                        alt={pillar.title}
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
+                        referrerPolicy="no-referrer"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/10 opacity-80 group-hover:opacity-90 transition-opacity duration-500"></div>
+                      
+                      <div className="absolute inset-0 p-4 md:p-8 flex flex-col justify-end">
+                        <div className="flex items-center gap-4 mb-0 group-hover:mb-4 transition-all duration-500">
+                          <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                            <pillar.icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                          </div>
+                          <h3 className="font-serif text-lg md:text-3xl text-white font-bold whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+                            {pillar.title}
+                          </h3>
+                        </div>
+                        
+                        <div className="h-0 group-hover:h-auto overflow-hidden transition-all duration-500">
+                          <p className="text-white/80 text-xs md:text-base leading-relaxed max-w-md opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-200 mb-4 md:mb-6">
+                            {pillar.description}
+                          </p>
+                          <span className="inline-flex items-center gap-2 text-white font-bold uppercase tracking-widest text-[10px] md:text-xs opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-300">
+                            Buka Halaman <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
+                          </span>
+                        </div>
+                        
+                        {/* Vertical Text for non-hover state */}
+                        <div className="absolute left-1/2 -translate-x-1/2 bottom-8 origin-bottom -rotate-90 group-hover:opacity-0 transition-opacity duration-300 whitespace-nowrap">
+                          <h3 className="font-serif text-lg md:text-xl text-white font-bold tracking-wider uppercase">
+                            {pillar.title}
+                          </h3>
+                        </div>
+                        
+                        {/* Big Number */}
+                        <div className="absolute top-8 left-1/2 -translate-x-1/2 group-hover:left-8 group-hover:translate-x-0 transition-all duration-500">
+                          <span className="text-4xl md:text-6xl font-black text-white/30 group-hover:text-white/50">
+                            0{index + 1}
                           </span>
                         </div>
                       </div>
                     </Link>
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h3 className="font-serif text-2xl text-himars-dark mb-2 group-hover:text-himars-peach transition-colors">{pillar.title}</h3>
-                        <p className="text-slate-500 text-sm leading-relaxed max-w-[240px]">{pillar.description}</p>
-                      </div>
-                      <ArrowRight className="text-himars-peach w-6 h-6 mt-1 group-hover:translate-x-2 transition-transform" />
-                    </div>
                   </motion.div>
                 ))}
               </div>
@@ -273,81 +303,89 @@ export default function Home() {
           </section>
         );
       case 'program-kerja':
+        const recentNews = data.news.filter(n => n.kategori !== 'kegiatan').slice(0, 1);
+        const upcomingEvents = data.events.filter(e => e.status === 'Akan Datang' || e.status === 'Berlangsung').slice(0, 3);
         return (
           <section key="program-kerja" className="py-32 bg-transparent">
             <div className="max-w-7xl mx-auto px-4">
               <div className="text-center mb-20">
                 <span className="text-himars-green font-bold tracking-widest uppercase text-xs mb-4 block">Agenda & Kegiatan</span>
                 <h2 className="font-serif text-4xl md:text-6xl text-himars-dark">
-                  Program <span className="italic font-light">Kerja Unggulan</span>
+                  Acara <span className="italic font-light">& Berita</span>
                 </h2>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-6 h-auto md:h-[700px]">
-                <motion.div 
-                  whileHover={{ y: -5 }}
-                  className="md:col-span-2 md:row-span-2 bg-himars-dark rounded-[2.5rem] overflow-hidden relative group"
-                >
-                  <img 
-                    src={data.settings.prokerImageUrl || undefined} 
-                    alt="Program Kerja" 
-                    className="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-700"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 p-12 flex flex-col justify-end">
-                    <span className="text-himars-peach font-bold uppercase tracking-widest text-xs mb-4">Acara Tahunan</span>
-                    <h3 className="text-3xl md:text-4xl font-serif text-white mb-4">Seminar Nasional Administrasi RS</h3>
-                    <p className="text-white/60 text-sm max-w-md">
-                      Pertemuan ilmiah tahunan yang menghadirkan pakar manajemen kesehatan untuk membahas tantangan industri RS masa depan.
-                    </p>
-                  </div>
-                </motion.div>
-
-                <motion.div 
-                  whileHover={{ y: -5 }}
-                  className="md:col-span-2 glass-ios rounded-[2.5rem] p-10 border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] flex flex-col justify-between group"
-                >
-                  <div>
-                    <div className="w-12 h-12 bg-himars-green/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-himars-green group-hover:text-white transition-colors">
-                      <Users className="w-6 h-6" />
+                {recentNews.length > 0 ? (
+                  <motion.div 
+                    whileHover={{ y: -5 }}
+                    className="md:col-span-2 md:row-span-2 bg-himars-dark rounded-[2.5rem] overflow-hidden relative group cursor-pointer"
+                    onClick={() => window.location.href = '/blog'}
+                  >
+                    <img 
+                      src={recentNews[0].coverImage || data.settings.prokerImageUrl || undefined} 
+                      alt={recentNews[0].judul} 
+                      className="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-700"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 p-12 flex flex-col justify-end">
+                      <span className="text-himars-peach font-bold uppercase tracking-widest text-xs mb-4">{recentNews[0].kategori}</span>
+                      <h3 className="text-3xl md:text-4xl font-serif text-white mb-4">{recentNews[0].judul}</h3>
+                      <p className="text-white/60 text-sm max-w-md line-clamp-3">
+                        {recentNews[0].isi}
+                      </p>
                     </div>
-                    <h3 className="text-2xl font-serif text-himars-dark mb-3">Latihan Kepemimpinan</h3>
-                    <p className="text-slate-500 text-sm">
-                      Membentuk karakter pemimpin masa depan yang berintegritas dan memiliki visi strategis dalam organisasi.
-                    </p>
-                  </div>
-                  <div className="mt-6 flex items-center gap-2 text-himars-green font-bold text-xs uppercase tracking-widest">
-                    Detail Program <ArrowRight className="w-4 h-4" />
-                  </div>
-                </motion.div>
+                  </motion.div>
+                ) : (
+                  <motion.div 
+                    whileHover={{ y: -5 }}
+                    className="md:col-span-2 md:row-span-2 bg-himars-dark rounded-[2.5rem] overflow-hidden relative group"
+                  >
+                    <img 
+                      src={data.settings.prokerImageUrl || undefined} 
+                      alt="Program Kerja" 
+                      className="w-full h-full object-cover opacity-40 group-hover:scale-105 transition-transform duration-700"
+                      referrerPolicy="no-referrer"
+                    />
+                    <div className="absolute inset-0 p-12 flex flex-col justify-end">
+                      <span className="text-himars-peach font-bold uppercase tracking-widest text-xs mb-4">Berita Terbaru</span>
+                      <h3 className="text-3xl md:text-4xl font-serif text-white mb-4">Belum ada berita</h3>
+                      <p className="text-white/60 text-sm max-w-md">
+                        Nantikan informasi terbaru dari kami.
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
 
-                <motion.div 
-                  whileHover={{ y: -5 }}
-                  className="bg-himars-peach rounded-[2.5rem] p-10 flex flex-col justify-between group"
-                >
-                  <div className="text-white">
-                    <h3 className="text-xl font-serif mb-3">Bakti Sosial</h3>
-                    <p className="text-white/80 text-xs">
-                      Kontribusi nyata mahasiswa kepada masyarakat melalui edukasi kesehatan.
-                    </p>
+                {upcomingEvents.length > 0 ? upcomingEvents.map((event, idx) => (
+                  <motion.div 
+                    key={event.id}
+                    whileHover={{ y: -5 }}
+                    className={`${idx === 1 ? 'bg-himars-peach text-white' : 'glass-ios border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)]'} rounded-[2.5rem] p-10 flex flex-col justify-between group`}
+                  >
+                    <div>
+                      <div className={`w-12 h-12 rounded-2xl flex items-center justify-center mb-6 transition-colors ${idx === 1 ? 'bg-white/20' : 'bg-himars-green/10 group-hover:bg-himars-green group-hover:text-white'}`}>
+                        {idx === 1 ? <Sparkles className="w-6 h-6 text-white" /> : <Users className="w-6 h-6" />}
+                      </div>
+                      <h3 className={`text-2xl font-serif mb-3 ${idx === 1 ? 'text-white' : 'text-himars-dark'}`}>{event.title}</h3>
+                      <p className={`text-sm line-clamp-2 ${idx === 1 ? 'text-white/80' : 'text-slate-500'}`}>
+                        {event.description}
+                      </p>
+                    </div>
+                    <div className={`mt-6 flex flex-col gap-1 font-bold text-xs uppercase tracking-widest ${idx === 1 ? 'text-white' : 'text-himars-green'}`}>
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-3 h-3" /> {event.date} • {event.time}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <MapPin className="w-3 h-3" /> {event.location}
+                      </div>
+                    </div>
+                  </motion.div>
+                )) : (
+                  <div className="md:col-span-2 md:row-span-2 flex items-center justify-center glass-ios border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] rounded-[2.5rem] p-10">
+                    <p className="text-slate-500 font-bold uppercase tracking-widest text-sm">Belum ada acara mendatang.</p>
                   </div>
-                  <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center self-end">
-                    <Sparkles className="w-5 h-5 text-white" />
-                  </div>
-                </motion.div>
-
-                <motion.div 
-                  whileHover={{ y: -5 }}
-                  className="glass-ios rounded-[2.5rem] p-10 border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] flex flex-col justify-between group"
-                >
-                  <div className="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center mb-4">
-                    <Newspaper className="w-5 h-5 text-himars-dark" />
-                  </div>
-                  <h3 className="text-lg font-serif text-himars-dark">Buletin ARS</h3>
-                  <p className="text-slate-500 text-xs">
-                    Publikasi rutin karya tulis dan riset mahasiswa.
-                  </p>
-                </motion.div>
+                )}
               </div>
             </div>
           </section>
@@ -449,7 +487,7 @@ export default function Home() {
 
   return (
     <div className="bg-liquid font-sans overflow-x-hidden">
-      {data.settings.homeSections
+      {(data.settings.homeSections || [])
         .filter(section => section.enabled)
         .map(section => renderSection(section.id))}
     </div>

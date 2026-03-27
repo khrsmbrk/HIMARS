@@ -5,7 +5,6 @@ import { Plus, Trash2, QrCode, X, Printer, Download, UserPlus, Search, MessageCi
 import { jsPDF } from 'jspdf';
 import { motion, AnimatePresence } from 'motion/react';
 import ConfirmModal from '../../components/ConfirmModal';
-import { kirimKeSheet } from '../../utils/kirimKeSheet';
 
 export default function Anggota() {
   const { data, addAnggota, deleteAnggota, updateAnggota } = useData();
@@ -16,8 +15,6 @@ export default function Anggota() {
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
   const [selectedAnggota, setSelectedAnggota] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isBroadcastModalOpen, setIsBroadcastModalOpen] = useState(false);
-  const [broadcastMessage, setBroadcastMessage] = useState('');
 
   const [actionStatus, setActionStatus] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
 
@@ -46,34 +43,10 @@ export default function Anggota() {
     const anggotaData = { ...formData, departemen: finalDepartemen };
 
     if (isEditModalOpen) {
-      // Sync to Google Sheets
-      await kirimKeSheet({
-        nama: anggotaData.nama,
-        nim: anggotaData.nim,
-        angkatan: anggotaData.angkatan,
-        jabatan: anggotaData.jabatan,
-        divisi: anggotaData.divisi || anggotaData.departemen,
-        no_hp: anggotaData.noHp,
-        status: anggotaData.status,
-        aksi: 'Edit'
-      }, 'Data Anggota');
-
       updateAnggota(anggotaData);
       setIsEditModalOpen(false);
       setActionStatus({ message: 'Data anggota diperbarui', type: 'success' });
     } else {
-      // Sync to Google Sheets
-      await kirimKeSheet({
-        nama: anggotaData.nama,
-        nim: anggotaData.nim,
-        angkatan: anggotaData.angkatan,
-        jabatan: anggotaData.jabatan,
-        divisi: anggotaData.divisi || anggotaData.departemen,
-        no_hp: anggotaData.noHp,
-        status: anggotaData.status,
-        aksi: 'Tambah'
-      }, 'Data Anggota');
-
       addAnggota(anggotaData);
       setIsAddModalOpen(false);
       setActionStatus({ message: 'Anggota baru ditambahkan', type: 'success' });
@@ -220,19 +193,6 @@ export default function Anggota() {
     a.jabatan.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-  const handleBroadcast = () => {
-    if (!broadcastMessage.trim()) return;
-    
-    // In a real app, this would call an API. 
-    // For now, we'll open WhatsApp for each member (or just show a success message)
-    // Actually, opening multiple windows is bad. We'll just simulate it.
-    
-    setActionStatus({ message: `Broadcast dikirim ke ${filteredAnggota.length} anggota`, type: 'success' });
-    setTimeout(() => setActionStatus(null), 3000);
-    setIsBroadcastModalOpen(false);
-    setBroadcastMessage('');
-  };
-
   const sendWhatsApp = (noHp: string, nama: string) => {
     const message = encodeURIComponent(`Halo ${nama}, ada informasi penting dari HIMARS UMLA...`);
     window.open(`https://wa.me/${noHp.replace(/^0/, '62')}?text=${message}`, '_blank');
@@ -271,18 +231,11 @@ export default function Anggota() {
             />
           </div>
           <button
-            onClick={() => setIsBroadcastModalOpen(true)}
-            className="inline-flex items-center px-6 py-3 bg-emerald-600 text-white rounded-2xl hover:bg-emerald-700 font-black uppercase tracking-[0.2em] text-xs transition-all shadow-lg shadow-emerald-200"
-          >
-            <MessageCircle className="w-4 h-4 mr-2" />
-            Broadcast
-          </button>
-          <button
             onClick={() => setIsAddModalOpen(true)}
             className="inline-flex items-center px-6 py-3 bg-himars-dark text-white rounded-2xl hover:bg-slate-800 font-black uppercase tracking-[0.2em] text-xs transition-all shadow-lg shadow-slate-200"
           >
             <UserPlus className="w-4 h-4 mr-2" />
-            Tambah
+            ANGGOTA
           </button>
         </div>
       </div>
@@ -396,14 +349,14 @@ export default function Anggota() {
       {/* Add/Edit Modal */}
       <AnimatePresence>
         {(isAddModalOpen || isEditModalOpen) && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="glass-ios rounded-[2.5rem] shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 w-full max-w-2xl overflow-hidden"
+              className="glass-ios rounded-[2.5rem] shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]"
             >
-              <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
                 <div>
                   <h3 className="text-xl font-black text-himars-dark uppercase tracking-tight">
                     {isEditModalOpen ? 'Edit Anggota' : 'Tambah Anggota'}
@@ -527,14 +480,27 @@ export default function Anggota() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Foto Profil (URL)</label>
+                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Foto Profil</label>
                   <input
-                    type="text"
-                    value={formData.foto}
-                    onChange={e => setFormData({...formData, foto: e.target.value})}
-                    placeholder="https://..."
-                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-himars-peach font-bold text-sm"
+                    type="file"
+                    accept="image/*"
+                    onChange={e => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          setFormData({...formData, foto: reader.result as string});
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-himars-peach font-bold text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-bold file:bg-himars-peach file:text-white hover:file:bg-orange-600"
                   />
+                  {formData.foto && (
+                    <div className="mt-2">
+                      <img src={formData.foto} alt="Preview" className="w-16 h-16 object-cover rounded-xl border border-slate-200" />
+                    </div>
+                  )}
                 </div>
 
                 <div className="pt-4">
@@ -554,7 +520,7 @@ export default function Anggota() {
       {/* QR Modal */}
       <AnimatePresence>
         {isQRModalOpen && selectedAnggota && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
             <motion.div 
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -602,55 +568,6 @@ export default function Anggota() {
           </div>
         )}
       </AnimatePresence>
-      {/* Broadcast Modal */}
-      <AnimatePresence>
-        {isBroadcastModalOpen && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
-            <motion.div 
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              className="glass-ios rounded-[2.5rem] shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 w-full max-w-lg overflow-hidden"
-            >
-              <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <div>
-                  <h3 className="text-xl font-black text-himars-dark uppercase tracking-tight">WhatsApp Broadcast</h3>
-                  <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">Kirim pesan ke {filteredAnggota.length} anggota</p>
-                </div>
-                <button onClick={() => setIsBroadcastModalOpen(false)} className="p-2 hover:bg-slate-200 rounded-full transition-colors">
-                  <X className="w-6 h-6 text-slate-400" />
-                </button>
-              </div>
-              <div className="p-8 space-y-6">
-                <div>
-                  <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Pesan Broadcast</label>
-                  <textarea
-                    rows={6}
-                    value={broadcastMessage}
-                    onChange={e => setBroadcastMessage(e.target.value)}
-                    placeholder="Tulis pesan Anda di sini..."
-                    className="w-full px-4 py-4 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-himars-peach font-bold text-sm resize-none"
-                  />
-                </div>
-                <div className="flex gap-3">
-                  <button 
-                    onClick={() => setIsBroadcastModalOpen(false)}
-                    className="flex-1 py-4 bg-slate-100 text-slate-500 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-slate-200 transition-colors"
-                  >
-                    Batal
-                  </button>
-                  <button 
-                    onClick={handleBroadcast}
-                    className="flex-1 py-4 bg-emerald-600 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-lg shadow-emerald-200 hover:bg-emerald-700 transition-colors"
-                  >
-                    Kirim Sekarang
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
       {/* Delete Confirmation Modal */}
       <ConfirmModal
@@ -661,14 +578,6 @@ export default function Anggota() {
         }}
         onConfirm={async () => {
           if (itemToDelete) {
-            const anggota = data.anggota.find(a => a.id === itemToDelete);
-            if (anggota) {
-              await kirimKeSheet({
-                nama: anggota.nama,
-                nim: anggota.nim,
-                aksi: 'Hapus'
-              }, 'Data Anggota');
-            }
             deleteAnggota(itemToDelete);
             setActionStatus({ message: 'Anggota berhasil dihapus', type: 'success' });
             setTimeout(() => setActionStatus(null), 3000);

@@ -3,10 +3,9 @@ import { useData } from '../../store/DataContext';
 import { Trash2, Shield, User as UserIcon, ShieldAlert, ShieldCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import ConfirmModal from '../../components/ConfirmModal';
-import { kirimKeSheet } from '../../utils/kirimKeSheet';
 
 export default function UserManagement() {
-  const { data, deleteUser, updateUserRole, updateUserDepartment, addActivityLog } = useData();
+  const { data, deleteUser, updateUserRole, updateUserDepartment, resetUserPassword, addActivityLog } = useData();
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
   const [isConfirmModalOpen, setIsConfirmModalOpen] = React.useState(false);
   const [confirmAction, setConfirmAction] = React.useState<{
@@ -16,9 +15,22 @@ export default function UserManagement() {
   } | null>(null);
 
   const pendingUsers = data.users.filter(u => u.role === 'member');
-  const adminUsers = data.users.filter(u => u.role === 'admin');
+  
+  const activeUsers = data.users.filter(u => u.role !== 'member').sort((a, b) => {
+    const getOrder = (user: any) => {
+      if (user.role === 'superadmin') return 1;
+      if (user.role === 'admin') {
+        if (user.department === 'pembina') return 2;
+        return 1;
+      }
+      if (user.department === 'pembina') return 2;
+      return 3;
+    };
+    return getOrder(a) - getOrder(b);
+  });
 
   const departments = [
+    { id: 'pembina', title: 'Pembina' },
     { id: 'ketua-wakil', title: 'Ketua & Wakil' },
     { id: 'sekretaris', title: 'Sekretaris' },
     { id: 'bendahara', title: 'Bendahara' },
@@ -46,6 +58,7 @@ export default function UserManagement() {
                 <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Pengguna</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Username / Email</th>
                 {!showAccept && <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Departemen</th>}
+                {!showAccept && <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">NIM</th>}
                 <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider">Terdaftar</th>
                 <th className="px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider text-right">Aksi</th>
               </tr>
@@ -53,7 +66,7 @@ export default function UserManagement() {
             <tbody className="divide-y divide-slate-100">
               {users.length === 0 ? (
                 <tr>
-                  <td colSpan={showAccept ? 4 : 5} className="px-6 py-10 text-center text-slate-400 italic">
+                  <td colSpan={showAccept ? 4 : 6} className="px-6 py-10 text-center text-slate-400 italic">
                     Tidak ada data pengguna
                   </td>
                 </tr>
@@ -62,13 +75,13 @@ export default function UserManagement() {
                   <tr key={user.id} className="hover:bg-slate-50/50 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${user.role === 'admin' ? 'bg-himars-peach/10 text-himars-peach' : 'bg-slate-100 text-slate-500'}`}>
-                          {user.role === 'admin' ? <ShieldCheck className="w-5 h-5" /> : <UserIcon className="w-5 h-5" />}
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${user.role === 'admin' || user.role === 'superadmin' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-slate-100 text-slate-500'}`}>
+                          {user.role === 'admin' || user.role === 'superadmin' ? <ShieldCheck className="w-5 h-5" /> : <UserIcon className="w-5 h-5" />}
                         </div>
                         <div>
                           <div className="font-bold text-slate-900">{user.nama}</div>
                           {user.id === currentUser.id && (
-                            <span className="text-[10px] bg-himars-peach/20 text-himars-peach px-1.5 py-0.5 rounded font-bold uppercase">Anda</span>
+                            <span className="text-[10px] bg-emerald-500/20 text-emerald-500 px-1.5 py-0.5 rounded font-bold uppercase">Anda</span>
                           )}
                         </div>
                       </div>
@@ -76,24 +89,17 @@ export default function UserManagement() {
                     <td className="px-6 py-4 text-sm text-slate-600 font-mono">{user.username}</td>
                     {!showAccept && (
                       <td className="px-6 py-4">
-                        {user.username === 'himars' || user.username === 'kharis@alishlah.sch.id' ? (
-                          <span className="text-xs font-black text-himars-peach uppercase tracking-widest bg-himars-peach/10 px-3 py-1 rounded-lg border border-himars-peach/20">
+                        {user.username === 'himars' || user.username === 'kharis@alishlah.sch.id' || user.role === 'superadmin' ? (
+                          <span className="text-xs font-black text-emerald-500 uppercase tracking-widest bg-emerald-500/10 px-3 py-1 rounded-lg border border-emerald-500/20">
                             Administrator
                           </span>
-                        ) : (
+                        ) : user.role === 'admin' ? (
                           <select
                             required
                             value={user.department || ''}
                             onChange={async (e) => {
                               if (!e.target.value) return;
                               
-                              await kirimKeSheet({
-                                nama: user.nama,
-                                username: user.username,
-                                departemen_baru: e.target.value,
-                                aksi: 'Update Departemen'
-                              }, 'Manajemen Pengguna');
-
                               updateUserDepartment(user.id, e.target.value);
                               addActivityLog({
                                 userId: currentUser.id,
@@ -105,15 +111,22 @@ export default function UserManagement() {
                               setActionStatus({ message: `Departemen ${user.nama} diperbarui.`, type: 'success' });
                               setTimeout(() => setActionStatus(null), 3000);
                             }}
-                            className="text-xs font-bold bg-slate-50 border-none rounded-lg px-2 py-1 focus:ring-2 focus:ring-himars-peach"
+                            className="text-xs font-bold bg-slate-50 border-none rounded-lg px-2 py-1 focus:ring-2 focus:ring-emerald-500"
                           >
                             <option value="">Pilih Departemen</option>
                             {departments.map(d => (
                               <option key={d.id} value={d.id}>{d.title}</option>
                             ))}
                           </select>
+                        ) : (
+                          <span className="text-xs font-medium text-slate-500">
+                            {user.department || '-'}
+                          </span>
                         )}
                       </td>
+                    )}
+                    {!showAccept && (
+                      <td className="px-6 py-4 text-sm text-slate-600 font-mono">{user.nim || '-'}</td>
                     )}
                     <td className="px-6 py-4 text-sm text-slate-500">{user.createdAt}</td>
                     <td className="px-6 py-4 text-right">
@@ -124,12 +137,6 @@ export default function UserManagement() {
                               <div className="flex items-center gap-2">
                                 <button
                                   onClick={async () => {
-                                    await kirimKeSheet({
-                                      nama: user.nama,
-                                      username: user.username,
-                                      aksi: 'Terima Admin'
-                                    }, 'Manajemen Pengguna');
-
                                     updateUserRole(user.id, 'admin');
                                     addActivityLog({
                                       userId: currentUser.id,
@@ -151,12 +158,6 @@ export default function UserManagement() {
                                       title: 'Tolak Pendaftaran',
                                       message: `Apakah Anda yakin ingin menolak pendaftaran ${user.nama}?`,
                                       onConfirm: async () => {
-                                        await kirimKeSheet({
-                                          nama: user.nama,
-                                          username: user.username,
-                                          aksi: 'Tolak Admin'
-                                        }, 'Manajemen Pengguna');
-
                                         deleteUser(user.id);
                                         addActivityLog({
                                           userId: currentUser.id,
@@ -177,7 +178,7 @@ export default function UserManagement() {
                                 </button>
                               </div>
                             )}
-                            {!showAccept && (
+                            {!showAccept && user.role === 'admin' && (
                               <div className="flex items-center gap-2">
                                 <button
                                   onClick={() => {
@@ -185,13 +186,7 @@ export default function UserManagement() {
                                       title: 'Cabut Akses Admin',
                                       message: `Apakah Anda yakin ingin mencabut akses Admin dari ${user.nama}?`,
                                       onConfirm: async () => {
-                                        await kirimKeSheet({
-                                          nama: user.nama,
-                                          username: user.username,
-                                          aksi: 'Cabut Akses Admin'
-                                        }, 'Manajemen Pengguna');
-
-                                        updateUserRole(user.id, 'member');
+                                        updateUserRole(user.id, 'anggota');
                                         addActivityLog({
                                           userId: currentUser.id,
                                           username: currentUser.username,
@@ -206,7 +201,7 @@ export default function UserManagement() {
                                     setIsConfirmModalOpen(true);
                                   }}
                                   className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-                                  title="Turunkan ke Member"
+                                  title="Turunkan ke Anggota"
                                 >
                                   <ShieldAlert className="w-5 h-5" />
                                 </button>
@@ -216,12 +211,59 @@ export default function UserManagement() {
                                       title: 'Hapus Akun',
                                       message: `Apakah Anda yakin ingin menghapus akun ${user.nama}?`,
                                       onConfirm: async () => {
-                                        await kirimKeSheet({
-                                          nama: user.nama,
-                                          username: user.username,
-                                          aksi: 'Hapus Akun'
-                                        }, 'Manajemen Pengguna');
-
+                                        deleteUser(user.id);
+                                        addActivityLog({
+                                          userId: currentUser.id,
+                                          username: currentUser.username,
+                                          nama: currentUser.nama,
+                                          action: 'Delete User',
+                                          details: `Admin ${currentUser.nama} menghapus akun ${user.nama}.`
+                                        });
+                                        setActionStatus({ message: `Akun ${user.nama} telah dihapus.`, type: 'success' });
+                                        setTimeout(() => setActionStatus(null), 3000);
+                                      }
+                                    });
+                                    setIsConfirmModalOpen(true);
+                                  }}
+                                  className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                  title="Hapus Akun"
+                                >
+                                  <Trash2 className="w-5 h-5" />
+                                </button>
+                              </div>
+                            )}
+                            {!showAccept && user.role === 'anggota' && (
+                              <div className="flex items-center gap-2">
+                                <button
+                                  onClick={() => {
+                                    setConfirmAction({
+                                      title: 'Reset Password',
+                                      message: `Apakah Anda yakin ingin mereset password ${user.nama} ke default (NIM)?`,
+                                      onConfirm: () => {
+                                        resetUserPassword(user.id);
+                                        addActivityLog({
+                                          userId: currentUser.id,
+                                          username: currentUser.username,
+                                          nama: currentUser.nama,
+                                          action: 'Reset Password',
+                                          details: `Admin ${currentUser.nama} mereset password ${user.nama}.`
+                                        });
+                                        setActionStatus({ message: `Password ${user.nama} telah direset ke NIM.`, type: 'success' });
+                                        setTimeout(() => setActionStatus(null), 3000);
+                                      }
+                                    });
+                                    setIsConfirmModalOpen(true);
+                                  }}
+                                  className="inline-flex items-center px-3 py-1.5 bg-white border border-slate-200 text-slate-600 text-xs font-bold rounded-lg hover:bg-slate-50 transition-all active:scale-95"
+                                >
+                                  Reset Password
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setConfirmAction({
+                                      title: 'Hapus Akun',
+                                      message: `Apakah Anda yakin ingin menghapus akun ${user.nama}?`,
+                                      onConfirm: async () => {
                                         deleteUser(user.id);
                                         addActivityLog({
                                           userId: currentUser.id,
@@ -258,7 +300,7 @@ export default function UserManagement() {
   );
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="w-full mx-auto">
       <div className="mb-8 flex justify-between items-end">
         <div>
           <h1 className="text-2xl font-bold text-slate-900">Manajemen Pengguna</h1>
@@ -287,8 +329,8 @@ export default function UserManagement() {
       />
 
       <UserTable 
-        users={adminUsers} 
-        title="Administrator Aktif" 
+        users={activeUsers} 
+        title="Pengguna Aktif" 
       />
 
       <div className="mt-6 p-4 bg-orange-50 rounded-xl border border-orange-100 flex gap-3">

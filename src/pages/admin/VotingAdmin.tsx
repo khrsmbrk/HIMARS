@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useData } from '../../store/DataContext';
 import { Vote, Plus, Search, Trash2, Edit2, Play, CheckCircle, Clock, Users, BarChart2, X, Upload } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell } from 'recharts';
 import ConfirmModal from '../../components/ConfirmModal';
 
@@ -109,12 +109,12 @@ export default function VotingAdmin() {
         <foreignObject x="-50" y="10" width="100" height="120">
           <div xmlns="http://www.w3.org/1999/xhtml" className="flex flex-col items-center justify-center">
             {kandidat?.foto ? (
-              <img src={kandidat.foto || undefined} alt={kandidat.kandidat} className="w-12 h-12 rounded-full object-cover border-2 border-white/20 mb-2" />
+              <img src={kandidat.foto || undefined} alt={kandidat.kandidat} className="w-12 h-12 rounded-full object-cover border-2 border-slate-200 mb-2" />
             ) : (
-              <div className="w-12 h-12 rounded-full bg-slate-700 border-2 border-white/20 mb-2 flex items-center justify-center text-[10px] text-white/50">Foto</div>
+              <div className="w-12 h-12 rounded-full bg-slate-100 border-2 border-slate-200 mb-2 flex items-center justify-center text-[10px] text-slate-400">Foto</div>
             )}
-            <span className="text-[10px] font-black text-white/70 uppercase tracking-widest text-center leading-tight">{payload.value}</span>
-            <span className="text-sm font-black text-white mt-1">{percentage}%</span>
+            <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest text-center leading-tight">{payload.value}</span>
+            <span className="text-sm font-black text-himars-dark mt-1">{percentage}%</span>
           </div>
         </foreignObject>
       </g>
@@ -122,7 +122,7 @@ export default function VotingAdmin() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="w-full mx-auto">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-black text-himars-dark uppercase tracking-tight">Sistem E-Voting</h1>
@@ -258,7 +258,7 @@ export default function VotingAdmin() {
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowAdd(false)}
-              className="absolute inset-0 bg-himars-dark/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             />
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -352,7 +352,7 @@ export default function VotingAdmin() {
                       <textarea value={newKandidat.misi} onChange={e => setNewKandidat({...newKandidat, misi: e.target.value})} className="w-full px-4 py-3 bg-white border-none rounded-xl focus:ring-2 focus:ring-himars-peach font-bold text-sm min-h-[80px]" />
                     </div>
                     <button type="button" onClick={handleAddKandidat} className="w-full py-3 bg-slate-200 text-slate-700 hover:bg-slate-300 rounded-xl font-black uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-2">
-                      <Plus className="w-4 h-4" /> Tambah Kandidat
+                      <Plus className="w-4 h-4" /> KANDIDAT
                     </button>
                   </div>
                 </div>
@@ -370,54 +370,54 @@ export default function VotingAdmin() {
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-himars-dark/95 backdrop-blur-md"
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-md"
             />
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative w-full max-w-6xl h-[85vh] flex flex-col"
+              className="relative w-full max-w-6xl h-[85vh] flex flex-col bg-white rounded-[3rem] p-8 md:p-12 shadow-2xl"
             >
               <button 
                 onClick={() => setLiveChartSession(null)}
-                className="absolute -top-12 right-0 text-white/50 hover:text-white transition-colors flex items-center gap-2 font-bold uppercase tracking-widest text-xs"
+                className="absolute top-8 right-8 text-slate-400 hover:text-slate-600 transition-colors flex items-center gap-2 font-bold uppercase tracking-widest text-xs"
               >
                 Tutup <X className="w-5 h-5" />
               </button>
               
               <div className="text-center mb-8">
-                <h2 className="text-4xl md:text-5xl font-black text-white uppercase tracking-tight mb-4">{liveSession.judul}</h2>
+                <h2 className="text-4xl md:text-5xl font-black text-himars-dark uppercase tracking-tight mb-4">{liveSession.judul}</h2>
                 <div className="flex items-center justify-center gap-4">
-                  <span className="px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest bg-himars-peach/20 text-himars-peach flex items-center gap-2 border border-himars-peach/30">
+                  <span className="px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest bg-himars-peach/10 text-himars-peach flex items-center gap-2 border border-himars-peach/20">
                     <span className="w-2 h-2 rounded-full bg-himars-peach animate-pulse"></span>
                     Live Result
                   </span>
-                  <span className="px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest bg-white/10 text-white border border-white/20">
+                  <span className="px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest bg-slate-100 text-slate-600 border border-slate-200">
                     Total Suara: {liveSession.kandidat.reduce((sum, k) => sum + k.jumlahSuara, 0)}
                   </span>
                 </div>
               </div>
 
-              <div className="flex-1 bg-white/5 rounded-[3rem] border border-white/10 p-8 md:p-12 backdrop-blur-sm">
+              <div className="flex-1 bg-slate-50 rounded-[2rem] border border-slate-100 p-8 md:p-12">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 100 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" vertical={false} />
                     <XAxis 
                       dataKey="name" 
                       tick={<CustomXAxisTick />} 
-                      axisLine={{ stroke: 'rgba(255,255,255,0.2)' }}
+                      axisLine={{ stroke: 'rgba(0,0,0,0.1)' }}
                       tickLine={false}
                       interval={0}
                     />
                     <YAxis 
                       allowDecimals={false}
-                      tick={{ fill: 'rgba(255,255,255,0.7)', fontSize: 14, fontWeight: 'bold' }}
+                      tick={{ fill: 'rgba(0,0,0,0.5)', fontSize: 14, fontWeight: 'bold' }}
                       axisLine={false}
                       tickLine={false}
                       dx={-10}
                     />
                     <Tooltip 
-                      cursor={{ fill: 'rgba(255,255,255,0.05)' }}
-                      contentStyle={{ backgroundColor: 'rgba(15, 23, 42, 0.9)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '16px', color: '#fff', padding: '12px 20px' }}
-                      itemStyle={{ color: '#fff', fontWeight: 'bold', fontSize: '16px' }}
+                      cursor={{ fill: 'rgba(0,0,0,0.05)' }}
+                      contentStyle={{ backgroundColor: 'rgba(255, 255, 255, 0.9)', border: '1px solid rgba(0,0,0,0.1)', borderRadius: '16px', color: '#0f172a', padding: '12px 20px', boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)' }}
+                      itemStyle={{ color: '#0f172a', fontWeight: 'bold', fontSize: '16px' }}
                       formatter={(value: number, name: string, props: any) => {
                         const totalSuara = liveSession?.kandidat.reduce((sum, k) => sum + k.jumlahSuara, 0) || 0;
                         const percentage = totalSuara > 0 ? Math.round((value / totalSuara) * 100) : 0;
@@ -426,7 +426,7 @@ export default function VotingAdmin() {
                           props.payload.kandidat
                         ];
                       }}
-                      labelStyle={{ color: 'rgba(255,255,255,0.5)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}
+                      labelStyle={{ color: 'rgba(0,0,0,0.5)', fontSize: '12px', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}
                     />
                     <Bar dataKey="suara" radius={[16, 16, 0, 0]} maxBarSize={120}>
                       {chartData.map((entry, index) => (

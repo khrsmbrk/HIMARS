@@ -12,13 +12,32 @@ import {
   ResponsiveContainer,
   BarChart,
   Bar,
-  Cell
+  Cell,
+  PieChart,
+  Pie,
+  Legend
 } from 'recharts';
+import TugasProkerWidget from '../../components/TugasProkerWidget';
 
 export default function Dashboard() {
   const { data } = useData();
   const [currentTime, setCurrentTime] = React.useState(new Date());
+  const [showOnboardingBanner, setShowOnboardingBanner] = React.useState(false);
   const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+  React.useEffect(() => {
+    const isDone = localStorage.getItem('himars_onboarding_done');
+    if (!isDone) {
+      setShowOnboardingBanner(true);
+    }
+
+    const handleOnboardingCompleted = () => {
+      setShowOnboardingBanner(false);
+    };
+
+    window.addEventListener('onboarding_completed', handleOnboardingCompleted);
+    return () => window.removeEventListener('onboarding_completed', handleOnboardingCompleted);
+  }, []);
 
   React.useEffect(() => {
     const timer = setInterval(() => {
@@ -73,8 +92,8 @@ export default function Dashboard() {
       isUp: saldo >= 0 
     },
     { 
-      name: 'Berita & Agenda', 
-      value: data.news.length, 
+      name: 'Berita & Acara', 
+      value: data.news.length + data.events.length, 
       icon: Calendar, 
       color: 'text-purple-600', 
       bg: 'bg-purple-50', 
@@ -125,11 +144,64 @@ export default function Dashboard() {
 
   const chartData = getChartData();
 
+  // Data for Proker Status Pie Chart
+  const prokerStatusData = [
+    { name: 'Selesai', value: data.proker.filter(p => p.status === 'Selesai').length, color: '#10b981' },
+    { name: 'Berjalan', value: data.proker.filter(p => p.status === 'Sedang Berjalan').length, color: '#3b82f6' },
+    { name: 'Belum Mulai', value: data.proker.filter(p => p.status === 'Belum Mulai').length, color: '#f59e0b' },
+    { name: 'Overdue', value: data.proker.filter(p => p.status === 'Overdue').length, color: '#ef4444' },
+  ].filter(d => d.value > 0);
+
+  // Data for Keuangan Bar Chart
+  const keuanganData = [
+    { name: 'Pemasukan', value: totalPemasukan, color: '#10b981' },
+    { name: 'Pengeluaran', value: totalPengeluaran, color: '#ef4444' },
+  ];
+
+  // Data for Demografi Angkatan
+  const angkatanCounts = data.anggota.reduce((acc, curr) => {
+    acc[curr.angkatan] = (acc[curr.angkatan] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+  
+  const demografiData = Object.entries(angkatanCounts).map(([name, value]) => ({
+    name,
+    value
+  })).sort((a, b) => a.name.localeCompare(b.name));
+
+  // Data for Voting Real-time
+  const activeVotingSession = data.voting.find(v => v.status === 'Aktif');
+  const votingData = activeVotingSession ? activeVotingSession.kandidat.map(k => ({
+    name: k.nama,
+    value: k.jumlahSuara,
+    color: '#' + Math.floor(Math.random()*16777215).toString(16) // Random color or predefined
+  })) : [];
+
+  const COLORS = ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899', '#f59e0b'];
+
   return (
     <div className="space-y-8">
+      {showOnboardingBanner && (
+        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 rounded-3xl p-6 text-white shadow-lg flex flex-col md:flex-row items-center justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-black tracking-tight mb-1">Selamat Datang di HIMARS Workspace!</h2>
+            <p className="text-sm text-blue-100">Selesaikan tur singkat untuk mengenal fitur-fitur utama aplikasi ini.</p>
+          </div>
+          <button 
+            onClick={() => {
+              localStorage.removeItem('himars_onboarding_done');
+              window.location.reload();
+            }}
+            className="px-6 py-2.5 bg-white text-blue-600 rounded-xl text-xs font-black uppercase tracking-widest hover:bg-blue-50 transition-colors whitespace-nowrap"
+          >
+            Mulai Tur
+          </button>
+        </div>
+      )}
+
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-black text-himars-dark uppercase tracking-tight">Dasbor Admin</h1>
+          <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Dasbor Admin</h1>
           <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] mt-1">
             {currentUser.department ? `Bidang ${currentUser.department.toUpperCase()} • ` : ''}
             Ringkasan Eksekutif HIMARS UMLA
@@ -138,13 +210,13 @@ export default function Dashboard() {
         <div className="flex items-center gap-3">
           <div className="text-right hidden sm:block">
             <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Waktu Server</p>
-            <p className="text-sm font-bold text-himars-dark">
+            <p className="text-sm font-bold text-slate-900">
               {currentTime.toLocaleDateString('id-ID', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-              <span className="ml-2 text-himars-peach">{currentTime.toLocaleTimeString('id-ID')}</span>
+              <span className="ml-2 text-emerald-500">{currentTime.toLocaleTimeString('id-ID')}</span>
             </p>
           </div>
           <div className="w-12 h-12 rounded-2xl glass-ios shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 flex items-center justify-center">
-            <TrendingUp className="w-6 h-6 text-himars-green" />
+            <TrendingUp className="w-6 h-6 text-emerald-600" />
           </div>
         </div>
       </div>
@@ -172,21 +244,138 @@ export default function Dashboard() {
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Statistik Presensi</h3>
-              <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Aktivitas Mingguan</p>
-            </div>
-            <select className="bg-slate-50 border border-slate-200 text-xs font-bold uppercase tracking-widest rounded-xl px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none">
-              <option>7 Hari Terakhir</option>
-              <option>30 Hari Terakhir</option>
-            </select>
-          </div>
-          <div className="h-[300px] w-full">
+      <div className={`grid grid-cols-1 lg:grid-cols-3 ${activeVotingSession ? 'xl:grid-cols-4' : ''} gap-8`}>
+        {/* Proker Status */}
+        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 relative overflow-hidden flex flex-col">
+          <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight mb-2">Status Proker</h3>
+          <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-6">Distribusi Program Kerja</p>
+          <div className="flex-1 min-h-[250px]">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={chartData}>
+              <PieChart>
+                <Pie
+                  data={prokerStatusData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={5}
+                  dataKey="value"
+                >
+                  {prokerStatusData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                  itemStyle={{ fontWeight: 800, fontSize: '12px' }}
+                />
+                <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase' }} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Keuangan */}
+        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 relative overflow-hidden flex flex-col">
+          <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight mb-2">Arus Kas</h3>
+          <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-6">Pemasukan vs Pengeluaran</p>
+          <div className="flex-1 min-h-[250px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={keuanganData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} dy={10} />
+                <YAxis hide />
+                <Tooltip 
+                  formatter={(value: number) => formatRupiah(value)}
+                  contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                  itemStyle={{ fontWeight: 800, fontSize: '12px' }}
+                  cursor={{ fill: '#f8fafc' }}
+                />
+                <Bar dataKey="value" radius={[8, 8, 0, 0]} maxBarSize={60}>
+                  {keuanganData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Demografi */}
+        <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 relative overflow-hidden flex flex-col">
+          <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight mb-2">Demografi</h3>
+          <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-6">Anggota per Angkatan</p>
+          <div className="flex-1 min-h-[250px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={demografiData} layout="vertical" margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                <XAxis type="number" hide />
+                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 700, fill: '#94a3b8' }} />
+                <Tooltip 
+                  contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                  itemStyle={{ fontWeight: 800, fontSize: '12px' }}
+                  cursor={{ fill: '#f8fafc' }}
+                />
+                <Bar dataKey="value" radius={[0, 8, 8, 0]} barSize={20}>
+                  {demografiData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* E-Voting Real-time */}
+        {activeVotingSession && (
+          <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 relative overflow-hidden flex flex-col">
+            <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight mb-2">E-Voting</h3>
+            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-6">Hasil Real-time</p>
+            <div className="flex-1 min-h-[250px]">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={votingData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={80}
+                    paddingAngle={5}
+                    dataKey="value"
+                  >
+                    {votingData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                    itemStyle={{ fontWeight: 800, fontSize: '12px' }}
+                  />
+                  <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 700, textTransform: 'uppercase' }} />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-8">
+          <TugasProkerWidget />
+          <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h3 className="text-xl font-black text-slate-800 uppercase tracking-tight">Statistik Presensi</h3>
+                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Aktivitas Mingguan</p>
+              </div>
+              <select className="bg-slate-50 border border-slate-200 text-xs font-bold uppercase tracking-widest rounded-xl px-4 py-2 focus:ring-2 focus:ring-orange-500 outline-none">
+                <option>7 Hari Terakhir</option>
+                <option>30 Hari Terakhir</option>
+              </select>
+            </div>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={chartData}>
                 <defs>
                   <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
@@ -217,6 +406,7 @@ export default function Dashboard() {
               </AreaChart>
             </ResponsiveContainer>
           </div>
+        </div>
         </div>
 
         <div className="bg-white rounded-[2.5rem] p-8 shadow-sm border border-slate-100 relative overflow-hidden flex flex-col">

@@ -10,21 +10,21 @@ const departmentInfo: Record<string, { title: string, description: string, icon:
     title: 'Ketua & Wakil Ketua',
     description: 'Pucuk pimpinan organisasi yang bertanggung jawab atas seluruh jalannya roda organisasi HIMARS.',
     icon: Shield,
-    color: 'bg-himars-dark',
+    color: 'bg-[#1a1a1a]',
     prompt: 'Indonesian university student leader wearing olive green uniform shirt, giving a speech at a podium. High quality, cinematic lighting, realistic, photography.'
   },
   'sekretaris': {
     title: 'Sekretaris',
     description: 'Bertanggung jawab atas administrasi, persuratan, dan pengarsipan dokumen organisasi.',
     icon: FileText,
-    color: 'bg-himars-green',
+    color: 'bg-emerald-500',
     prompt: 'Indonesian university student wearing olive green uniform shirt, typing on a laptop and organizing documents. High quality, cinematic lighting, realistic, photography.'
   },
   'bendahara': {
     title: 'Bendahara',
     description: 'Mengelola keuangan organisasi, termasuk pemasukan, pengeluaran, dan kas anggota.',
     icon: Shield,
-    color: 'bg-himars-peach',
+    color: 'bg-orange-500',
     prompt: 'Indonesian university student wearing olive green uniform shirt, calculating finances with a calculator and laptop. High quality, cinematic lighting, realistic, photography.'
   },
   'paik': {
@@ -64,9 +64,9 @@ export default function DepartmentDetail() {
 
   if (!info) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <h1 className="text-2xl font-black text-himars-dark uppercase">Departemen Tidak Ditemukan</h1>
-        <Link to="/struktur" className="mt-4 text-himars-peach font-bold uppercase tracking-widest text-xs">&larr; Kembali ke Struktur</Link>
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 bg-slate-50 text-slate-900">
+        <h1 className="text-2xl font-black text-slate-900 uppercase">Departemen Tidak Ditemukan</h1>
+        <Link to="/struktur" className="mt-4 text-orange-500 font-bold uppercase tracking-widest text-xs hover:text-orange-400">&larr; Kembali ke Struktur</Link>
       </div>
     );
   }
@@ -74,14 +74,14 @@ export default function DepartmentDetail() {
   const Icon = info.icon;
 
   return (
-    <div className="bg-liquid min-h-screen py-24 px-4">
+    <div className="bg-slate-50 min-h-screen py-24 px-4 text-slate-900 selection:bg-orange-500/30">
       <div className="max-w-5xl mx-auto">
-        <Link to="/struktur" className="inline-flex items-center gap-2 text-slate-400 hover:text-himars-peach transition-colors uppercase tracking-widest font-black text-xs mb-12">
+        <Link to="/struktur" className="inline-flex items-center gap-2 text-slate-600 hover:text-orange-500 transition-colors uppercase tracking-widest font-black text-xs mb-12">
           <ArrowLeft className="w-4 h-4" />
           <span>Kembali ke Struktur</span>
         </Link>
 
-        <div className="glass-ios rounded-[3rem] shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 overflow-hidden">
+        <div className="bg-white rounded-[3rem] border border-slate-200 overflow-hidden shadow-xl">
           <div className={`${info.color} p-12 text-white relative overflow-hidden`}>
             <div className="absolute inset-0 z-0">
               <AIGeneratedImage 
@@ -90,7 +90,7 @@ export default function DepartmentDetail() {
               />
             </div>
             <div className="flex flex-col md:flex-row items-center gap-8 relative z-10">
-              <div className="w-24 h-24 bg-white/20 backdrop-blur-md rounded-3xl flex items-center justify-center shrink-0">
+              <div className="w-24 h-24 bg-white/10 backdrop-blur-md rounded-3xl flex items-center justify-center shrink-0 border border-white/20">
                 <Icon className="w-12 h-12 text-white" />
               </div>
               <div className="text-center md:text-left">
@@ -101,14 +101,14 @@ export default function DepartmentDetail() {
           </div>
 
           <div className="p-12">
-            <h2 className="text-2xl font-black text-himars-dark uppercase tracking-tight mb-8">Program Kerja & Fokus</h2>
+            <h2 className="text-2xl font-black text-slate-900 uppercase tracking-tight mb-8">Program Kerja & Fokus</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                <h3 className="font-black text-himars-dark uppercase tracking-widest text-xs mb-3">Visi Bidang</h3>
+              <div className="p-6 bg-slate-50 rounded-3xl border border-slate-200">
+                <h3 className="font-black text-slate-900 uppercase tracking-widest text-xs mb-3">Visi Bidang</h3>
                 <p className="text-slate-600 text-sm leading-relaxed">Mewujudkan tata kelola {info.title.toLowerCase()} yang transparan, inovatif, dan berdampak bagi seluruh mahasiswa Administrasi Rumah Sakit.</p>
               </div>
-              <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100">
-                <h3 className="font-black text-himars-dark uppercase tracking-widest text-xs mb-3">Misi Utama</h3>
+              <div className="p-6 bg-slate-50 rounded-3xl border border-slate-200">
+                <h3 className="font-black text-slate-900 uppercase tracking-widest text-xs mb-3">Misi Utama</h3>
                 <ul className="text-slate-600 text-sm space-y-2 list-disc list-inside">
                   <li>Optimalisasi peran {info.title} dalam organisasi.</li>
                   <li>Pengembangan potensi anggota melalui program kerja terukur.</li>
@@ -117,8 +117,8 @@ export default function DepartmentDetail() {
               </div>
             </div>
 
-            <div className="mt-12 pt-12 border-t border-slate-100 text-center">
-              <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.2em]">Himpunan Mahasiswa Administrasi Rumah Sakit</p>
+            <div className="mt-12 pt-12 border-t border-slate-200 text-center">
+              <p className="text-slate-500 text-xs font-bold uppercase tracking-[0.2em]">Himpunan Mahasiswa Administrasi Rumah Sakit</p>
             </div>
           </div>
         </div>

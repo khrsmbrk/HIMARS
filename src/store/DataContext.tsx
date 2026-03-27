@@ -1,4 +1,59 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import localforage from 'localforage';
+
+import { ProkerStage } from '../components/ProkerStepper';
+
+export interface FormField {
+  id: string;
+  label: string;
+  type: 'text' | 'textarea' | 'select' | 'radio' | 'email' | 'tel' | 'file';
+  options?: string[]; // For select/radio
+  required: boolean;
+}
+
+export interface FormAttachment {
+  id: string;
+  name: string;
+  dataUrl: string;
+}
+
+export interface FormSettings {
+  isActive: boolean;
+  eventCategory?: string;
+  title: string;
+  description: string;
+  startDate: string;
+  endDate: string;
+  interviewStartDate?: string;
+  interviewEndDate?: string;
+  announcementDate?: string;
+  teksPengumuman: string;
+  fields: FormField[];
+  attachments?: FormAttachment[];
+}
+
+export interface Pendaftaran {
+  id: number;
+  namaLengkap: string;
+  nim: string;
+  angkatan: string;
+  noHp: string;
+  semester?: string;
+  motivasi?: string;
+  bidangMinat?: string;
+  alasanBidang?: string;
+  email?: string;
+  password?: string;
+  foto?: string;
+  suratPernyataan?: string;
+  buktiFollow?: string;
+  tanggalDaftar: string;
+  tahap: 'Berkas' | 'Wawancara' | 'Pengumuman' | 'Selesai';
+  status: 'Menunggu Berkas' | 'Menuju Wawancara' | 'Menunggu Pengumuman' | 'Diterima' | 'Tidak Lulus';
+  formDataDinamis?: Record<string, any>;
+  fileUploads?: { label: string; url: string }[];
+  eventCategory?: string;
+}
 
 export interface Anggota {
   id: number;
@@ -23,6 +78,14 @@ export interface Kehadiran {
   nim: string;
   departemen?: string;
   keterangan: string;
+}
+
+export interface Presensi {
+  idPresensi: string;
+  idAcara: string;
+  idAnggota: string;
+  waktuPresensi: string;
+  status?: "HADIR" | "TERLAMBAT" | "IZIN";
 }
 
 export interface Formatur {
@@ -73,6 +136,17 @@ export interface News {
   waktu: string;
   qrCode: string;
   coverImage?: string;
+}
+
+export interface Event {
+  id: number;
+  title: string;
+  date: string;
+  time: string;
+  location: string;
+  description: string;
+  capacity: number;
+  status: 'Akan Datang' | 'Berlangsung' | 'Selesai';
 }
 
 export interface DrivePermission {
@@ -153,6 +227,17 @@ export interface Proker {
   source?: 'manual' | 'email' | 'slack' | 'teams';
   attachments?: string[];
   mirroredIn?: string[]; // Departments where this card is mirrored
+  // Workflow fields
+  tahapSaatIni?: ProkerStage;
+  tanggalPengajuan?: string;
+  tanggalPersetujuan?: string;
+  tanggalSelesaiTahap?: string;
+  idPenanggungJawab?: number;
+  evaluasi?: {
+    apaYangBerhasil: string;
+    yangPerluDiperbaiki: string;
+    rekomendasiTahunDepan: string;
+  };
 }
 
 export interface InboxItem {
@@ -188,6 +273,8 @@ export interface Alumni {
   id: number;
   nama: string;
   nim: string;
+  angkatan: string;
+  tahunLulus: string;
   tahunJabatan: string;
   jabatanTerakhir: string;
   kontak: string;
@@ -257,8 +344,9 @@ export interface User {
   username: string;
   password: string; // In a real app, this would be hashed
   nama: string;
-  role: 'admin' | 'member';
+  role: 'admin' | 'member' | 'anggota';
   department?: string;
+  nim?: string;
   createdAt: string;
 }
 
@@ -272,6 +360,14 @@ export interface ActivityLog {
   timestamp: string;
 }
 
+export interface GalleryItem {
+  id: number;
+  title: string;
+  imageUrl: string;
+  date: string;
+  category: string;
+}
+
 export interface Notification {
   id: number;
   title: string;
@@ -282,12 +378,26 @@ export interface Notification {
   link?: string;
 }
 
+export interface JadwalPendaftaran {
+  bukaPendaftaran: string;
+  tutupPendaftaran: string;
+  mulaiSeleksi: string;
+  selesaiSeleksi: string;
+  mulaiWawancara: string;
+  selesaiWawancara: string;
+  pengumumanResmi: string;
+  teksPengumuman: string;
+}
+
 interface DataState {
+  pendaftaran: Pendaftaran[];
   anggota: Anggota[];
   kehadiran: Kehadiran[];
+  presensi: Presensi[];
   keuangan: Keuangan[];
   kasWajib: KasWajib[];
   dokumen: Dokumen[];
+  events: Event[];
   news: News[];
   drive: DriveItem[];
   inventaris: Inventaris[];
@@ -299,6 +409,7 @@ interface DataState {
   aspirasi: Aspirasi[];
   alumni: Alumni[];
   voting: VotingSession[];
+  gallery: GalleryItem[];
   settings: WebsiteSettings;
   users: User[];
   activityLogs: ActivityLog[];
@@ -307,28 +418,43 @@ interface DataState {
     used: number;
     limit: number;
   };
+  jadwalPendaftaran: JadwalPendaftaran | null;
+  formSettings: FormSettings;
 }
 
 interface DataContextType {
   data: DataState;
   setData: React.Dispatch<React.SetStateAction<DataState>>;
+  updateJadwalPendaftaran: (jadwal: JadwalPendaftaran) => void;
+  updateFormSettings: (settings: FormSettings) => void;
+  addPendaftaran: (pendaftaran: Omit<Pendaftaran, 'id' | 'tanggalDaftar' | 'status' | 'tahap'>) => void;
+  updatePendaftaranStatus: (id: number, status: Pendaftaran['status'], tahap: Pendaftaran['tahap']) => void;
+  deletePendaftaran: (id: number) => void;
   addAnggota: (anggota: Omit<Anggota, 'id' | 'qrCode'>) => void;
   deleteAnggota: (id: number) => void;
   addKehadiran: (kehadiran: Omit<Kehadiran, 'id' | 'tanggal' | 'waktu'>) => void;
+  addPresensi: (presensi: Omit<Presensi, 'idPresensi' | 'waktuPresensi'>) => void;
+  deletePresensi: (idPresensi: string) => void;
   addKeuangan: (keuangan: Omit<Keuangan, 'id' | 'tanggal'>) => void;
   updateKasWajib: (kas: KasWajib) => void;
   generateMonthlyKas: (bulan: string, nominal: number) => void;
   addDokumen: (dokumen: Omit<Dokumen, 'id' | 'tanggal' | 'isPublic'>) => void;
   deleteDokumen: (id: number) => void;
   toggleDokumenPublic: (id: number) => void;
-  addNews: (news: Omit<News, 'id' | 'tanggal' | 'waktu' | 'qrCode'>) => void;
+  addEvent: (event: Omit<Event, 'id'>) => void;
+  updateEvent: (event: Event) => void;
+  deleteEvent: (id: number) => void;
+  addNews: (news: Omit<News, 'id' | 'qrCode'> & { tanggal?: string, waktu?: string }) => void;
   deleteNews: (id: number) => void;
+  addGalleryItem: (item: Omit<GalleryItem, 'id' | 'date'>) => void;
+  deleteGalleryItem: (id: number) => void;
   updateSettings: (settings: Partial<WebsiteSettings>) => void;
   updateHomeSections: (sections: HomeSection[]) => void;
   addUser: (user: Omit<User, 'id' | 'createdAt'>) => void;
   deleteUser: (id: number) => void;
-  updateUserRole: (id: number, role: 'admin' | 'member') => void;
+  updateUserRole: (id: number, role: 'admin' | 'member' | 'anggota') => void;
   updateUserDepartment: (id: number, department: string) => void;
+  resetUserPassword: (id: number, newPassword?: string) => void;
   addDriveItem: (item: Omit<DriveItem, 'id' | 'createdAt' | 'updatedAt' | 'timestamp' | 'isTrashed' | 'permissions'>) => void;
   deleteDriveItem: (id: string) => void;
   trashDriveItem: (id: string) => void;
@@ -351,6 +477,7 @@ interface DataContextType {
   deleteSurat: (id: number) => void;
   addProker: (item: Omit<Proker, 'id'>) => void;
   updateProkerStatus: (id: number, status: Proker['status'], realisasi?: number) => void;
+  updateTahapProker: (id: number, tahapBaru: Proker['tahapSaatIni'], evaluasi?: Proker['evaluasi']) => void;
   deleteProker: (id: number) => void;
   updateProkerDates: (id: number, start: string, end: string, startTime?: string, endTime?: string) => void;
   updateProkerDetails: (id: number, details: Partial<Proker>) => void;
@@ -378,11 +505,14 @@ interface DataContextType {
 const STORAGE_KEY = 'hmps_dashboard_data';
 
 const defaultData: DataState = {
+  pendaftaran: [],
   anggota: [],
   kehadiran: [],
+  presensi: [],
   keuangan: [],
   kasWajib: [],
   dokumen: [],
+  events: [],
   inventaris: [],
   peminjaman: [],
   surat: [],
@@ -434,11 +564,45 @@ const defaultData: DataState = {
   aspirasi: [],
   alumni: [],
   voting: [],
+  gallery: [
+    {
+      id: 1,
+      title: 'Seminar Nasional ARS 2025',
+      imageUrl: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=800&q=80',
+      date: '2025-10-15',
+      category: 'Kegiatan'
+    },
+    {
+      id: 2,
+      title: 'Bakti Sosial Kesehatan',
+      imageUrl: 'https://images.unsplash.com/photo-1593113563332-f144318182b8?auto=format&fit=crop&w=800&q=80',
+      date: '2025-08-20',
+      category: 'Pengmas'
+    }
+  ],
   activityLogs: [],
   notifications: [],
   storageQuota: {
     used: 2400000, // Initial size of Logo HIMARS HighRes.png
     limit: 1024 * 1024 * 1024 * 1024, // 1 TB
+  },
+  jadwalPendaftaran: null,
+  formSettings: {
+    isActive: true,
+    eventCategory: 'Open Recruitment Pengurus HIMARS',
+    title: 'Open Recruitment Pengurus HIMARS 2026',
+    description: 'Silakan isi formulir di bawah ini dengan data yang sebenar-benarnya.',
+    startDate: new Date().toISOString().slice(0, 16),
+    endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+    interviewStartDate: '',
+    interviewEndDate: '',
+    announcementDate: '',
+    teksPengumuman: 'Saat ini tidak ada pendaftaran yang sedang berlangsung.',
+    fields: [
+      { id: 'f1', label: 'Angkatan', type: 'select', options: ['2023', '2024', '2025'], required: true },
+      { id: 'f2', label: 'Motivasi Bergabung', type: 'textarea', required: true },
+      { id: 'f3', label: 'Pilihan Departemen', type: 'select', options: ['BPH', 'Medkom', 'PSDM', 'Litbang', 'Kewirausahaan'], required: true }
+    ]
   },
   news: [
     {
@@ -569,8 +733,8 @@ const defaultData: DataState = {
       { id: 'video', title: 'Video & Podcast', enabled: true },
       { id: 'kontak', title: 'Informasi Sekretariat', enabled: true },
     ],
-    privacyPolicy: 'Himpunan Mahasiswa Program Studi Administrasi Rumah Sakit (HIMARS) Universitas Muhammadiyah Lamongan menghargai privasi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda saat menggunakan layanan website kami.\n\n1. Informasi yang Kami Kumpulkan\nKami dapat mengumpulkan informasi pribadi yang Anda berikan secara langsung kepada kami, seperti:\n- Nama lengkap dan Nomor Induk Mahasiswa (NIM)\n- Alamat email dan nomor telepon\n- Data akademik terkait program studi\n- Informasi kehadiran pada acara atau kegiatan HIMARS\n\n2. Penggunaan Informasi\nInformasi yang kami kumpulkan digunakan untuk:\n- Mengelola keanggotaan dan administrasi HIMARS\n- Mencatat presensi kehadiran kegiatan melalui sistem QR Code\n- Mengirimkan informasi, pengumuman, dan pembaruan terkait kegiatan himpunan\n- Meningkatkan kualitas layanan dan program kerja HIMARS\n\n3. Keamanan Data\nKami berkomitmen untuk melindungi keamanan data pribadi Anda. Kami menerapkan langkah-langkah keamanan teknis dan organisasi yang sesuai untuk mencegah akses, pengungkapan, perubahan, atau penghancuran data yang tidak sah. Data Anda hanya dapat diakses oleh pengurus HIMARS yang berwenang.\n\n4. Berbagi Informasi\nKami tidak akan menjual, menyewakan, atau menukar informasi pribadi Anda kepada pihak ketiga. Kami hanya dapat membagikan informasi Anda jika diwajibkan oleh hukum atau peraturan akademik Universitas Muhammadiyah Lamongan.\n\n5. Perubahan Kebijakan Privasi\nHIMARS berhak untuk memperbarui Kebijakan Privasi ini sewaktu-waktu. Perubahan akan diumumkan melalui website ini. Kami menyarankan Anda untuk meninjau halaman ini secara berkala untuk mengetahui perubahan apa pun.\n\n6. Hubungi Kami\nJika Anda memiliki pertanyaan atau kekhawatiran tentang Kebijakan Privasi ini, silakan hubungi kami melalui email di himars@umla.ac.id atau melalui kontak resmi HIMARS lainnya.',
-    termsConditions: 'Selamat datang di website resmi Himpunan Mahasiswa Program Studi Administrasi Rumah Sakit (HIMARS) Universitas Muhammadiyah Lamongan. Dengan mengakses dan menggunakan website ini, Anda menyetujui Syarat dan Ketentuan berikut.\n\n1. Penerimaan Syarat\nDengan mengakses dan menggunakan website ini, Anda menyatakan bahwa Anda telah membaca, memahami, dan setuju untuk terikat oleh Syarat dan Ketentuan ini. Jika Anda tidak setuju dengan bagian mana pun dari syarat ini, Anda tidak diperkenankan menggunakan website ini.\n\n2. Penggunaan Website\n- Website ini ditujukan untuk memberikan informasi terkait kegiatan, program kerja, dan administrasi HIMARS UMLA.\n- Anda setuju untuk menggunakan website ini hanya untuk tujuan yang sah dan sesuai dengan hukum yang berlaku.\n- Anda tidak diperkenankan menggunakan website ini dengan cara yang dapat merusak, menonaktifkan, membebani, atau mengganggu server atau jaringan yang terhubung ke website.\n- Anda tidak diperkenankan mencoba mendapatkan akses tidak sah ke bagian mana pun dari website, akun pengguna lain, atau sistem komputer.\n\n3. Hak Kekayaan Intelektual\nSeluruh konten, desain, teks, grafik, logo, ikon, gambar, klip audio, unduhan digital, kompilasi data, dan perangkat lunak yang terdapat di website ini adalah milik HIMARS UMLA atau penyedia kontennya dan dilindungi oleh undang-undang hak cipta Indonesia dan internasional.\n\n4. Konten Pengguna\nJika Anda mengirimkan atau memposting konten ke website (misalnya, komentar, artikel, atau materi lainnya), Anda memberikan HIMARS UMLA hak non-eksklusif, bebas royalti, abadi, tidak dapat dibatalkan, dan dapat disublisensikan sepenuhnya untuk menggunakan, mereproduksi, memodifikasi, mengadaptasi, menerbitkan, menerjemahkan, membuat karya turunan dari, mendistribusikan, dan menampilkan konten tersebut di seluruh dunia dalam media apa pun.\n\n5. Tautan ke Pihak Ketiga\nWebsite ini mungkin berisi tautan ke situs web pihak ketiga yang tidak dimiliki atau dikendalikan oleh HIMARS UMLA. Kami tidak memiliki kendali atas, dan tidak bertanggung jawab atas konten, kebijakan privasi, atau praktik dari situs web pihak ketiga mana pun.\n\n6. Penafian Jaminan\nWebsite ini disediakan "sebagaimana adanya" dan "sebagaimana tersedia". HIMARS UMLA tidak membuat pernyataan atau jaminan apa pun, tersurat maupun tersirat, mengenai pengoperasian website ini atau informasi, konten, materi, atau produk yang disertakan di website ini.\n\n7. Batasan Tanggung Jawab\nHIMARS UMLA tidak akan bertanggung jawab atas kerugian apa pun yang timbul dari penggunaan website ini, termasuk namun tidak terbatas pada kerugian langsung, tidak langsung, insidental, hukuman, dan konsekuensial.\n\n8. Perubahan Syarat dan Ketentuan\nHIMARS UMLA berhak untuk mengubah Syarat dan Ketentuan ini sewaktu-waktu tanpa pemberitahuan sebelumnya. Penggunaan Anda yang berkelanjutan atas website ini setelah perubahan tersebut merupakan persetujuan Anda terhadap Syarat dan Ketentuan yang baru.\n\n9. Hukum yang Berlaku\nSyarat dan Ketentuan ini diatur oleh dan ditafsirkan sesuai dengan hukum Republik Indonesia. Setiap perselisihan yang timbul sehubungan dengan Syarat dan Ketentuan ini akan tunduk pada yurisdiksi eksklusif pengadilan di Indonesia.'
+    privacyPolicy: 'Himpunan Mahasiswa Program Studi Administrasi Rumah Sakit (HIMARS) Universitas Muhammadiyah Lamongan menghargai privasi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi Anda saat menggunakan layanan HIMARS Workspace.\n\n1. Informasi yang Kami Kumpulkan\nKami mengumpulkan informasi yang Anda berikan secara langsung melalui sistem kami, termasuk namun tidak terbatas pada:\n- Identitas Pribadi: Nama lengkap, Nomor Induk Mahasiswa (NIM), program studi, dan angkatan.\n- Informasi Kontak: Alamat email, nomor telepon, dan tautan media sosial.\n- Data Pendaftaran: Berkas unggahan (foto profil, surat kesanggupan, portofolio, dll) yang disubmit melalui form pendaftaran kegiatan atau kepanitiaan.\n- Data Kehadiran: Rekam jejak presensi melalui pemindaian QR Code pada setiap acara HIMARS.\n- Data Aktivitas: Interaksi di Forum Internal, riwayat pengajuan Program Kerja (Proker), dan partisipasi kepanitiaan.\n\n2. Penggunaan Informasi\nInformasi yang dikumpulkan digunakan secara eksklusif untuk keperluan organisasi, meliputi:\n- Verifikasi identitas anggota dan alumni HIMARS.\n- Pengelolaan administrasi, termasuk E-Arsip Surat dan Database Alumni.\n- Perekaman presensi kegiatan secara real-time dan akurat.\n- Proses seleksi pendaftaran kepanitiaan atau acara melalui evaluasi berkas yang diunggah.\n- Pelaporan otomatis (Laporan Kegiatan, Keuangan, dan Proker) untuk transparansi organisasi.\n- Komunikasi internal dan penyebaran informasi melalui Forum Internal.\n\n3. Keamanan dan Penyimpanan Data\nKami menerapkan standar keamanan yang ketat untuk melindungi data Anda:\n- Akses Terbatas: Data sensitif hanya dapat diakses oleh pengurus HIMARS yang memiliki wewenang (Admin, BPH, Kadiv) melalui sistem login terenkripsi.\n- Penyimpanan Lokal & Cloud: Data disimpan secara aman menggunakan teknologi penyimpanan modern dengan enkripsi standar industri.\n- Retensi Data: Dokumen pendaftaran dan arsip akan disimpan selama masa kepengurusan dan diarsipkan sesuai pedoman administrasi HIMARS.\n\n4. Berbagi Informasi\nKami tidak akan menjual, menyewakan, atau membagikan informasi pribadi Anda kepada pihak ketiga di luar Universitas Muhammadiyah Lamongan tanpa persetujuan eksplisit Anda, kecuali diwajibkan oleh hukum atau peraturan akademik universitas.\n\n5. Hak Pengguna\nSebagai pengguna HIMARS Workspace, Anda berhak untuk:\n- Mengakses dan memperbarui profil serta data pribadi Anda.\n- Meminta penghapusan berkas pendaftaran setelah periode kegiatan berakhir (dengan menghubungi administrator).\n- Mengontrol visibilitas informasi tertentu di Forum Internal.\n\n6. Perubahan Kebijakan\nKebijakan Privasi ini dapat diperbarui secara berkala untuk menyesuaikan dengan penambahan fitur baru di HIMARS Workspace. Setiap perubahan signifikan akan diinformasikan melalui dashboard utama atau email.\n\n7. Hubungi Kami\nJika Anda memiliki pertanyaan terkait privasi dan keamanan data, silakan hubungi kami melalui email di himars@umla.ac.id atau melalui fitur "Lapor Bug" di dalam sistem.',
+    termsConditions: 'Selamat datang di HIMARS Workspace, platform digital resmi Himpunan Mahasiswa Program Studi Administrasi Rumah Sakit (HIMARS) Universitas Muhammadiyah Lamongan. Dengan mengakses dan menggunakan sistem ini, Anda menyetujui Syarat dan Ketentuan berikut.\n\n1. Ketentuan Penggunaan Platform\n- HIMARS Workspace adalah platform internal yang ditujukan untuk pengurus, anggota, dan alumni HIMARS UMLA.\n- Akses ke fitur administratif (E-Arsip, Keuangan, Inventaris, Tracking Proker) dibatasi sesuai dengan peran dan divisi masing-masing pengguna (Role-Based Access Control).\n- Pengguna wajib menjaga kerahasiaan kredensial login dan bertanggung jawab atas semua aktivitas yang terjadi di bawah akun mereka.\n\n2. Pendaftaran dan Pengunggahan Berkas\n- Saat menggunakan fitur Pendaftaran, pengguna setuju untuk memberikan informasi yang akurat, terkini, dan lengkap.\n- Pengguna bertanggung jawab penuh atas legalitas dan kebenaran berkas yang diunggah (foto, surat pernyataan, dokumen PDF, dll).\n- HIMARS berhak menolak pendaftaran atau menghapus berkas yang mengandung unsur SARA, pornografi, malware, atau melanggar norma akademik.\n\n3. Presensi QR dan Kehadiran\n- Fitur Presensi QR digunakan untuk mencatat kehadiran resmi dalam acara HIMARS.\n- Penyalahgunaan sistem presensi (seperti memindai QR code untuk orang lain yang tidak hadir) merupakan pelanggaran kode etik organisasi dan dapat dikenakan sanksi administratif.\n\n4. Forum Internal dan Komunikasi\n- Forum Internal disediakan untuk diskusi konstruktif, berbagi ide, dan koordinasi kepanitiaan.\n- Pengguna dilarang melakukan spamming, ujaran kebencian, perundungan (bullying), atau menyebarkan informasi rahasia organisasi ke pihak luar.\n- Administrator berhak memoderasi, mengedit, atau menghapus postingan yang melanggar ketentuan ini.\n\n5. Hak Kekayaan Intelektual\n- Seluruh struktur sistem, desain antarmuka, logo, dan alur kerja (workflow) HIMARS Workspace adalah hak milik intelektual HIMARS UMLA.\n- Dokumen arsip, proposal proker, dan laporan keuangan yang dihasilkan melalui sistem ini adalah dokumen rahasia milik organisasi dan tidak boleh disebarluaskan tanpa izin tertulis dari Ketua Himpunan.\n\n6. Ketersediaan Layanan dan Pemeliharaan\n- Kami berusaha menjaga HIMARS Workspace beroperasi 24/7, namun tidak menjamin bahwa sistem akan selalu bebas dari gangguan atau error.\n- Pemeliharaan sistem (maintenance) dapat dilakukan sewaktu-waktu untuk peningkatan fitur, yang mungkin menyebabkan penghentian layanan sementara.\n\n7. Batasan Tanggung Jawab\n- HIMARS UMLA tidak bertanggung jawab atas kehilangan data yang disebabkan oleh kelalaian pengguna, kegagalan perangkat keras pengguna, atau serangan siber di luar kendali wajar kami.\n- Segala keputusan organisasi yang diambil berdasarkan data dari Laporan Otomatis sistem adalah tanggung jawab penuh pengurus yang menjabat.\n\n8. Perubahan Syarat dan Ketentuan\nHIMARS berhak memodifikasi Syarat dan Ketentuan ini kapan saja. Penggunaan berkelanjutan atas HIMARS Workspace setelah perubahan menandakan persetujuan Anda terhadap ketentuan yang direvisi.\n\n9. Hukum yang Berlaku\nSyarat dan Ketentuan ini tunduk pada peraturan akademik Universitas Muhammadiyah Lamongan dan hukum yang berlaku di Republik Indonesia.'
   },
   users: [
     {
@@ -597,56 +761,79 @@ const defaultData: DataState = {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [data, setData] = useState<DataState>(() => {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved);
-        
-        // Force update super admin credentials and departments
-        const updatedUsers = (parsed.users && parsed.users.length > 0 ? parsed.users : defaultData.users).map((u: any) => {
-          let updated = { ...u };
-          if (u.id === 1 || u.username === 'himars') {
-            updated = { 
-              ...updated, 
-              username: 'himars', 
-              password: 'himars123',
-              department: 'Administrator' 
-            };
-          } else if (u.id === 2 || u.username === 'kharis@alishlah.sch.id') {
-            updated = { 
-              ...updated, 
-              department: 'Administrator' 
-            };
-          }
-          return updated;
-        });
-
-        // Merge saved data with defaultData to ensure new fields exist
-        return {
-          ...defaultData,
-          ...parsed,
-          aspirasi: parsed.aspirasi || [],
-          alumni: parsed.alumni || [],
-          voting: parsed.voting || [],
-          activityLogs: parsed.activityLogs || [],
-          notifications: parsed.notifications || [],
-          users: updatedUsers,
-          settings: {
-            ...defaultData.settings,
-            ...(parsed.settings || {})
-          }
-        };
-      } catch (e) {
-        console.error('Failed to parse saved data', e);
-      }
-    }
-    return defaultData;
-  });
+  const [data, setData] = useState<DataState>(defaultData);
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }, [data]);
+    const loadData = async () => {
+      try {
+        const saved = await localforage.getItem<DataState>(STORAGE_KEY);
+        if (saved) {
+          // Force update super admin credentials and departments
+          const updatedUsers = (saved.users && saved.users.length > 0 ? saved.users : defaultData.users).map((u: any) => {
+            let updated = { ...u };
+            if (u.id === 1 || u.username === 'himars') {
+              updated = { 
+                ...updated, 
+                username: 'himars', 
+                password: 'himars123',
+                department: 'Administrator' 
+              };
+            } else if (u.id === 2 || u.username === 'kharis@alishlah.sch.id') {
+              updated = { 
+                ...updated, 
+                department: 'Administrator' 
+              };
+            }
+            return updated;
+          });
+
+          setData({
+            ...defaultData,
+            ...saved,
+            settings: {
+              ...defaultData.settings,
+              ...(saved.settings || {})
+            },
+            pendaftaran: saved.pendaftaran || [],
+            anggota: saved.anggota || [],
+            kehadiran: saved.kehadiran || [],
+            presensi: saved.presensi || [],
+            keuangan: saved.keuangan || [],
+            kasWajib: saved.kasWajib || [],
+            dokumen: saved.dokumen || [],
+            news: saved.news || [],
+            drive: saved.drive || [],
+            inventaris: saved.inventaris || [],
+            peminjaman: saved.peminjaman || [],
+            surat: saved.surat || [],
+            proker: saved.proker || [],
+            inbox: saved.inbox || [],
+            automations: saved.automations || [],
+            aspirasi: saved.aspirasi || [],
+            alumni: saved.alumni || [],
+            voting: saved.voting || [],
+            gallery: saved.gallery || [],
+            activityLogs: saved.activityLogs || [],
+            notifications: saved.notifications || [],
+            users: updatedUsers,
+            jadwalPendaftaran: saved.jadwalPendaftaran || null
+          });
+        }
+      } catch (e) {
+        console.error('Failed to parse saved data', e);
+      } finally {
+        setIsLoaded(true);
+      }
+    };
+    loadData();
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded) {
+      localforage.setItem(STORAGE_KEY, data).catch(err => console.error('Failed to save data', err));
+    }
+  }, [data, isLoaded]);
 
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
@@ -672,6 +859,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
+  if (!isLoaded) {
+    return <div className="min-h-screen flex items-center justify-center bg-[#0a0a0a]"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-500"></div></div>;
+  }
+
   const generateUniqueCode = () => {
     const format = data.settings.memberIdFormat;
     const time = Date.now().toString();
@@ -682,6 +873,36 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       .replace('{TIME}', time)
       .replace('{RAND}', rand)
       .replace('{YEAR}', year);
+  };
+
+  const updateJadwalPendaftaran = (jadwal: JadwalPendaftaran) => {
+    setData(prev => ({ ...prev, jadwalPendaftaran: jadwal }));
+  };
+
+  const updateFormSettings = (settings: FormSettings) => {
+    setData(prev => ({ ...prev, formSettings: settings }));
+  };
+
+  const addPendaftaran = (pendaftaran: Omit<Pendaftaran, 'id' | 'tanggalDaftar' | 'status' | 'tahap'>) => {
+    const newPendaftaran: Pendaftaran = {
+      ...pendaftaran,
+      id: Date.now(),
+      tanggalDaftar: new Date().toISOString(),
+      tahap: 'Berkas',
+      status: 'Menunggu Berkas',
+    };
+    setData(prev => ({ ...prev, pendaftaran: [newPendaftaran, ...(prev.pendaftaran || [])] }));
+  };
+
+  const updatePendaftaranStatus = (id: number, status: Pendaftaran['status'], tahap: Pendaftaran['tahap']) => {
+    setData(prev => ({
+      ...prev,
+      pendaftaran: (prev.pendaftaran || []).map(p => p.id === id ? { ...p, status, tahap } : p)
+    }));
+  };
+
+  const deletePendaftaran = (id: number) => {
+    setData(prev => ({ ...prev, pendaftaran: (prev.pendaftaran || []).filter(p => p.id !== id) }));
   };
 
   const addAnggota = (anggota: Omit<Anggota, 'id' | 'qrCode'>) => {
@@ -706,6 +927,24 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       waktu: now.toLocaleTimeString('id-ID'),
     };
     setData(prev => ({ ...prev, kehadiran: [newKehadiran, ...prev.kehadiran] }));
+  };
+
+  const addPresensi = (presensi: Omit<Presensi, 'idPresensi' | 'waktuPresensi'>) => {
+    const now = new Date();
+    const newPresensi: Presensi = {
+      ...presensi,
+      idPresensi: Date.now().toString(),
+      waktuPresensi: now.toISOString(),
+      status: presensi.status || 'HADIR'
+    };
+    setData(prev => ({ ...prev, presensi: [newPresensi, ...prev.presensi] }));
+  };
+
+  const deletePresensi = (idPresensi: string) => {
+    setData(prev => ({
+      ...prev,
+      presensi: prev.presensi.filter(p => p.idPresensi !== idPresensi)
+    }));
   };
 
   const addKeuangan = (keuangan: Omit<Keuangan, 'id' | 'tanggal'>) => {
@@ -758,13 +997,32 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }));
   };
 
-  const addNews = (news: Omit<News, 'id' | 'tanggal' | 'waktu' | 'qrCode'>) => {
+  const addEvent = (event: Omit<Event, 'id'>) => {
+    const newEvent: Event = {
+      ...event,
+      id: Date.now(),
+    };
+    setData(prev => ({ ...prev, events: [newEvent, ...prev.events] }));
+  };
+
+  const updateEvent = (event: Event) => {
+    setData(prev => ({
+      ...prev,
+      events: prev.events.map(e => e.id === event.id ? event : e)
+    }));
+  };
+
+  const deleteEvent = (id: number) => {
+    setData(prev => ({ ...prev, events: prev.events.filter(e => e.id !== id) }));
+  };
+
+  const addNews = (news: Omit<News, 'id' | 'qrCode'> & { tanggal?: string, waktu?: string }) => {
     const now = new Date();
     const newNews: News = {
       ...news,
       id: Date.now(),
-      tanggal: now.toLocaleDateString('id-ID'),
-      waktu: now.toLocaleTimeString('id-ID'),
+      tanggal: news.tanggal || now.toLocaleDateString('id-ID'),
+      waktu: news.waktu || now.toLocaleTimeString('id-ID'),
       qrCode: `EVT-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`,
     };
     setData(prev => ({ ...prev, news: [newNews, ...prev.news] }));
@@ -801,10 +1059,22 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setData(prev => ({ ...prev, users: prev.users.filter(u => u.id !== id) }));
   };
 
-  const updateUserRole = (id: number, role: 'admin' | 'member') => {
+  const updateUserRole = (id: number, role: 'admin' | 'member' | 'anggota') => {
     setData(prev => ({
       ...prev,
       users: prev.users.map(u => u.id === id ? { ...u, role } : u)
+    }));
+  };
+
+  const resetUserPassword = (id: number, newPassword?: string) => {
+    setData(prev => ({
+      ...prev,
+      users: prev.users.map(u => {
+        if (u.id === id) {
+          return { ...u, password: newPassword || u.nim || u.username };
+        }
+        return u;
+      })
     }));
   };
 
@@ -1033,11 +1303,53 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const addPeminjaman = (item: Omit<Peminjaman, 'id'>) => {
-    setData(prev => ({ ...prev, peminjaman: [{ ...item, id: Date.now() }, ...prev.peminjaman] }));
+    setData(prev => {
+      // Decrease stock
+      const newInventaris = prev.inventaris.map(inv => {
+        if (inv.id === item.inventarisId) {
+          return { ...inv, jumlah: Math.max(0, inv.jumlah - 1) };
+        }
+        return inv;
+      });
+      return { 
+        ...prev, 
+        peminjaman: [{ ...item, id: Date.now() }, ...prev.peminjaman],
+        inventaris: newInventaris
+      };
+    });
   };
 
   const updatePeminjamanStatus = (id: number, status: Peminjaman['status']) => {
-    setData(prev => ({ ...prev, peminjaman: prev.peminjaman.map(p => p.id === id ? { ...p, status } : p) }));
+    setData(prev => {
+      const peminjaman = prev.peminjaman.find(p => p.id === id);
+      if (!peminjaman) return prev;
+
+      let newInventaris = prev.inventaris;
+      
+      // If returning, increase stock
+      if (status === 'Dikembalikan' && peminjaman.status !== 'Dikembalikan') {
+        newInventaris = prev.inventaris.map(inv => {
+          if (inv.id === peminjaman.inventarisId) {
+            return { ...inv, jumlah: inv.jumlah + 1 };
+          }
+          return inv;
+        });
+      } else if (status !== 'Dikembalikan' && peminjaman.status === 'Dikembalikan') {
+        // If changing from returned to something else, decrease stock
+        newInventaris = prev.inventaris.map(inv => {
+          if (inv.id === peminjaman.inventarisId) {
+            return { ...inv, jumlah: Math.max(0, inv.jumlah - 1) };
+          }
+          return inv;
+        });
+      }
+
+      return { 
+        ...prev, 
+        peminjaman: prev.peminjaman.map(p => p.id === id ? { ...p, status } : p),
+        inventaris: newInventaris
+      };
+    });
   };
 
   const addSurat = (item: Omit<Surat, 'id'>) => {
@@ -1052,22 +1364,42 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setData(prev => ({ ...prev, surat: prev.surat.filter(s => s.id !== id) }));
   };
 
-  const addProker = useCallback((item: Omit<Proker, 'id'>) => {
+  const addProker = (item: Omit<Proker, 'id'>) => {
     setData(prev => ({ ...prev, proker: [{ ...item, id: Date.now() }, ...prev.proker] }));
-  }, []);
+  };
 
-  const updateProkerStatus = useCallback((id: number, status: Proker['status'], realisasi?: number) => {
+  const updateProkerStatus = (id: number, status: Proker['status'], realisasi?: number) => {
     setData(prev => ({ 
       ...prev, 
       proker: prev.proker.map(p => p.id === id ? { ...p, status, ...(realisasi !== undefined && { realisasi }) } : p) 
     }));
-  }, []);
+  };
 
-  const deleteProker = useCallback((id: number) => {
+  const updateTahapProker = (id: number, tahapBaru: Proker['tahapSaatIni'], evaluasi?: Proker['evaluasi']) => {
+    setData(prev => ({
+      ...prev,
+      proker: prev.proker.map(p => {
+        if (p.id === id) {
+          const now = new Date().toISOString();
+          let updates: Partial<Proker> = { tahapSaatIni: tahapBaru };
+          
+          if (tahapBaru === ProkerStage.PENGAJUAN) updates.tanggalPengajuan = now;
+          if (tahapBaru === ProkerStage.DISETUJUI) updates.tanggalPersetujuan = now;
+          if (tahapBaru === ProkerStage.SELESAI) updates.tanggalSelesaiTahap = now;
+          if (evaluasi) updates.evaluasi = evaluasi;
+
+          return { ...p, ...updates };
+        }
+        return p;
+      })
+    }));
+  };
+
+  const deleteProker = (id: number) => {
     setData(prev => ({ ...prev, proker: prev.proker.filter(p => p.id !== id) }));
-  }, []);
+  };
 
-  const updateProkerDates = useCallback((id: number, start: string, end: string, startTime?: string, endTime?: string) => {
+  const updateProkerDates = (id: number, start: string, end: string, startTime?: string, endTime?: string) => {
     setData(prev => ({
       ...prev,
       proker: prev.proker.map(p => p.id === id ? { 
@@ -1078,16 +1410,16 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         ...(endTime && { waktuSelesai: endTime })
       } : p)
     }));
-  }, []);
+  };
 
-  const updateProkerDetails = useCallback((id: number, details: Partial<Proker>) => {
+  const updateProkerDetails = (id: number, details: Partial<Proker>) => {
     setData(prev => ({
       ...prev,
       proker: prev.proker.map(p => p.id === id ? { ...p, ...details } : p)
     }));
-  }, []);
+  };
 
-  const addInboxItem = useCallback((item: Omit<InboxItem, 'id' | 'timestamp' | 'processed'>) => {
+  const addInboxItem = (item: Omit<InboxItem, 'id' | 'timestamp' | 'processed'>) => {
     const newItem: InboxItem = {
       ...item,
       id: Date.now(),
@@ -1095,30 +1427,31 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       processed: false
     };
     setData(prev => ({ ...prev, inbox: [newItem, ...prev.inbox] }));
-  }, []);
+  };
 
-  const processInboxItem = useCallback((id: number) => {
+  const processInboxItem = (id: number) => {
     setData(prev => ({
       ...prev,
       inbox: prev.inbox.map(item => item.id === id ? { ...item, processed: true } : item)
     }));
-  }, []);
+  };
 
-  const addAutomationRule = useCallback((rule: Omit<AutomationRule, 'id'>) => {
+  const addAutomationRule = (rule: Omit<AutomationRule, 'id'>) => {
     const newRule: AutomationRule = { ...rule, id: Date.now() };
     setData(prev => ({ ...prev, automations: [...prev.automations, newRule] }));
-  }, []);
+  };
 
-  const toggleAutomationRule = useCallback((id: number) => {
+  const toggleAutomationRule = (id: number) => {
     setData(prev => ({
       ...prev,
       automations: prev.automations.map(r => r.id === id ? { ...r, enabled: !r.enabled } : r)
     }));
-  }, []);
+  };
 
-  const runAutomations = useCallback(() => {
+  const runAutomations = () => {
     setData(prev => {
       let updatedProker = [...prev.proker];
+      let hasChanges = false;
       const now = new Date().toISOString().split('T')[0];
 
       prev.automations.forEach(rule => {
@@ -1126,7 +1459,8 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (rule.trigger === 'due_date_passed') {
           updatedProker = updatedProker.map(p => {
-            if (p.status !== 'Selesai' && p.tanggalSelesai < now) {
+            if (p.status !== 'Selesai' && p.tanggalSelesai < now && p.status !== 'Overdue') {
+              hasChanges = true;
               return { ...p, status: 'Overdue' };
             }
             return p;
@@ -1134,9 +1468,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       });
 
+      if (!hasChanges) return prev;
       return { ...prev, proker: updatedProker };
     });
-  }, []);
+  };
 
   const addAspirasi = (item: Omit<Aspirasi, 'id' | 'tanggal' | 'status'>) => {
     setData(prev => ({ 
@@ -1208,6 +1543,20 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }));
   };
 
+  const addGalleryItem = (item: Omit<GalleryItem, 'id' | 'date'>) => {
+    setData(prev => ({
+      ...prev,
+      gallery: [{ ...item, id: Date.now(), date: new Date().toLocaleDateString('id-ID') }, ...(prev.gallery || [])]
+    }));
+  };
+
+  const deleteGalleryItem = (id: number) => {
+    setData(prev => ({
+      ...prev,
+      gallery: (prev.gallery || []).filter(g => g.id !== id)
+    }));
+  };
+
   const addActivityLog = (log: Omit<ActivityLog, 'id' | 'timestamp'>) => {
     const newLog: ActivityLog = {
       ...log,
@@ -1243,10 +1592,10 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   return (
     <DataContext.Provider value={{
-      data, setData, addAnggota, deleteAnggota, addKehadiran, addKeuangan, updateKasWajib, generateMonthlyKas, addDokumen, deleteDokumen, toggleDokumenPublic, addNews, deleteNews, updateSettings, addUser, deleteUser, updateUserRole, updateHomeSections, updateUserDepartment, 
+      data, setData, updateJadwalPendaftaran, updateFormSettings, addPendaftaran, updatePendaftaranStatus, deletePendaftaran, addAnggota, deleteAnggota, addKehadiran, addPresensi, deletePresensi, addKeuangan, updateKasWajib, generateMonthlyKas, addDokumen, deleteDokumen, toggleDokumenPublic, addEvent, updateEvent, deleteEvent, addNews, deleteNews, addGalleryItem, deleteGalleryItem, updateSettings, addUser, deleteUser, updateUserRole, resetUserPassword, updateHomeSections, updateUserDepartment, 
       addDriveItem, deleteDriveItem, trashDriveItem, restoreDriveItem, permanentlyDeleteDriveItem, renameDriveItem, moveDriveItem, shareDriveItem, toggleDrivePublicLink,
       deleteMonthlyKas, deleteKeuangan, deleteKehadiran,
-      addInventaris, updateInventaris, deleteInventaris, addPeminjaman, updatePeminjamanStatus, addSurat, updateSuratStatus, deleteSurat, addProker, updateProkerStatus, deleteProker, updateProkerDates, updateProkerDetails, addInboxItem, processInboxItem, addAutomationRule, toggleAutomationRule, runAutomations,
+      addInventaris, updateInventaris, deleteInventaris, addPeminjaman, updatePeminjamanStatus, addSurat, updateSuratStatus, deleteSurat, addProker, updateProkerStatus, updateTahapProker, deleteProker, updateProkerDates, updateProkerDetails, addInboxItem, processInboxItem, addAutomationRule, toggleAutomationRule, runAutomations,
       addAspirasi, updateAspirasiStatus, deleteAspirasi, addAlumni, updateAlumni, deleteAlumni, addVotingSession, updateVotingStatus, deleteVotingSession, castVote, addActivityLog,
       addNotification, markNotificationRead, deleteNotification
     }}>

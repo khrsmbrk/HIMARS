@@ -130,7 +130,7 @@ export default function Settings() {
   };
 
   return (
-    <div className="max-w-4xl">
+    <div className="w-full">
       <div className="mb-8">
         <h1 className="text-3xl font-black text-himars-dark uppercase tracking-tight">Pengaturan Web</h1>
         <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] mt-1">Kustomisasi Identitas & Tata Letak</p>
@@ -378,9 +378,9 @@ export default function Settings() {
                     const newFormatur = [{ id: Date.now().toString(), nama: '', jabatan: '' }, ...formData.formatur];
                     setFormData({ ...formData, formatur: newFormatur });
                   }}
-                  className="px-4 py-2 bg-himars-peach text-white rounded-xl text-[10px] font-black uppercase tracking-widest"
+                  className="px-4 py-2 bg-himars-peach text-white rounded-xl text-[10px] font-black uppercase tracking-widest flex items-center gap-2"
                 >
-                  Tambah Personil
+                  <Plus className="w-4 h-4" /> PERSONIL
                 </button>
               </div>
               <div className="p-8 space-y-4">

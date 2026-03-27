@@ -14,7 +14,6 @@ import {
   ResponsiveContainer
 } from 'recharts';
 import ConfirmModal from '../../components/ConfirmModal';
-import { kirimKeSheet } from '../../utils/kirimKeSheet';
 
 export default function Keuangan() {
   const { data, addKeuangan, updateKasWajib, generateMonthlyKas, deleteMonthlyKas, deleteKeuangan } = useData();
@@ -57,12 +56,6 @@ export default function Keuangan() {
     if (deleteConfirm.type === 'transaksi') {
       const transactionToDelete = data.keuangan.find(k => k.id === deleteConfirm.id);
       if (transactionToDelete) {
-        await kirimKeSheet({
-          keterangan: transactionToDelete.keterangan,
-          nominal: transactionToDelete.nominal,
-          aksi: 'Hapus Transaksi'
-        }, 'Keuangan');
-
         if (transactionToDelete.keterangan.startsWith('Bayar Kas: ')) {
           const match = transactionToDelete.keterangan.match(/Bayar Kas: (.*) \((.*)\)/);
           if (match) {
@@ -85,10 +78,6 @@ export default function Keuangan() {
       deleteKeuangan(deleteConfirm.id as number);
       setActionStatus({ message: 'Transaksi berhasil dihapus', type: 'success' });
     } else if (deleteConfirm.type === 'kas-bulan') {
-      await kirimKeSheet({
-        bulan: deleteConfirm.id,
-        aksi: 'Hapus Kas Bulanan'
-      }, 'Keuangan');
       deleteMonthlyKas(deleteConfirm.id as string);
       setActionStatus({ message: `Data bulan ${deleteConfirm.id} berhasil dihapus`, type: 'success' });
     }
@@ -110,15 +99,6 @@ export default function Keuangan() {
     }
 
     const nominalValue = parseFloat(formData.nominal);
-
-    // Sync to Google Sheets
-    await kirimKeSheet({
-      jenis: formData.jenis,
-      kategori: formData.kategori,
-      keterangan: formData.keterangan,
-      nominal: nominalValue,
-      program_kerja: formData.programKerja
-    }, 'Keuangan');
 
     addKeuangan({
       ...formData,
@@ -233,10 +213,10 @@ export default function Keuangan() {
           {activeTab === 'transaksi' && (
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="inline-flex items-center px-6 py-3 bg-himars-dark text-white rounded-2xl hover:bg-slate-800 font-black uppercase tracking-[0.2em] text-xs transition-all shadow-lg shadow-slate-200"
+              className="inline-flex items-center px-4 py-2 bg-himars-dark text-white rounded-xl hover:bg-slate-800 font-black uppercase tracking-widest text-xs transition-all shadow-md"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Tambah Transaksi
+              <Plus className="w-4 h-4 mr-1" />
+              TRANSAKSI
             </button>
           )}
         </div>
@@ -323,14 +303,14 @@ export default function Keuangan() {
             {/* Add Transaction Modal */}
             <AnimatePresence>
               {isAddModalOpen && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm">
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
                   <motion.div 
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     exit={{ scale: 0.9, opacity: 0 }}
-                    className="glass-ios rounded-[2.5rem] shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 w-full max-w-md overflow-hidden"
+                    className="glass-ios rounded-[2.5rem] shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 w-full max-w-md overflow-hidden flex flex-col max-h-[90vh]"
                   >
-                    <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                    <div className="px-8 py-6 border-b border-slate-100 flex justify-between items-center bg-slate-50 shrink-0">
                       <div>
                         <h3 className="text-xl font-black text-himars-dark uppercase tracking-tight">Tambah Transaksi</h3>
                         <p className="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">Catat Pemasukan atau Pengeluaran</p>
@@ -339,7 +319,7 @@ export default function Keuangan() {
                         <XCircle className="w-6 h-6 text-slate-400" />
                       </button>
                     </div>
-                    <form onSubmit={(e) => { handleSubmit(e); setIsAddModalOpen(false); }} className="p-8 space-y-6">
+                    <form onSubmit={(e) => { handleSubmit(e); setIsAddModalOpen(false); }} className="p-8 space-y-6 overflow-y-auto">
                       <div>
                         <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Jenis</label>
                         <div className="grid grid-cols-2 gap-2">
@@ -691,55 +671,61 @@ export default function Keuangan() {
                               
                               return (
                                 <td key={bulan} className="px-4 py-5 text-center">
-                                  <button
-                                    onClick={async () => {
-                                      const newStatus = kas.status === 'lunas' ? 'belum' : 'lunas';
-                                      
-                                      await kirimKeSheet({
-                                        nama: anggota.nama,
-                                        bulan: bulan,
-                                        status: newStatus,
-                                        aksi: 'Update Kas Wajib'
-                                      }, 'Keuangan');
-
-                                      updateKasWajib({ 
-                                        ...kas, 
-                                        status: newStatus, 
-                                        tanggalBayar: newStatus === 'lunas' ? new Date().toLocaleDateString('id-ID') : undefined 
-                                      });
-                                      
-                                      if (newStatus === 'lunas') {
-                                        const alreadyExists = data.keuangan.some(k => 
-                                          k.keterangan === `Bayar Kas: ${anggota.nama} (${bulan})`
-                                        );
+                                  <div className="flex flex-col items-center gap-2">
+                                    <button
+                                      onClick={async () => {
+                                        const newStatus = kas.status === 'lunas' ? 'belum' : 'lunas';
                                         
-                                        if (!alreadyExists) {
-                                          addKeuangan({
-                                            jenis: 'pemasukan',
-                                            kategori: 'kaswajib',
-                                            programKerja: 'Kas Wajib',
-                                            keterangan: `Bayar Kas: ${anggota.nama} (${bulan})`,
-                                            nominal: kas.nominal
-                                          });
+                                        updateKasWajib({ 
+                                          ...kas, 
+                                          status: newStatus, 
+                                          tanggalBayar: newStatus === 'lunas' ? new Date().toLocaleDateString('id-ID') : undefined 
+                                        });
+                                        
+                                        if (newStatus === 'lunas') {
+                                          const alreadyExists = data.keuangan.some(k => 
+                                            k.keterangan === `Bayar Kas: ${anggota.nama} (${bulan})`
+                                          );
+                                          
+                                          if (!alreadyExists) {
+                                            addKeuangan({
+                                              jenis: 'pemasukan',
+                                              kategori: 'kaswajib',
+                                              programKerja: 'Kas Wajib',
+                                              keterangan: `Bayar Kas: ${anggota.nama} (${bulan})`,
+                                              nominal: kas.nominal
+                                            });
+                                          }
+                                        } else {
+                                          const existingTransaction = data.keuangan.find(k => 
+                                            k.keterangan === `Bayar Kas: ${anggota.nama} (${bulan})`
+                                          );
+                                          if (existingTransaction) {
+                                            deleteKeuangan(existingTransaction.id);
+                                          }
                                         }
-                                      } else {
-                                        const existingTransaction = data.keuangan.find(k => 
-                                          k.keterangan === `Bayar Kas: ${anggota.nama} (${bulan})`
-                                        );
-                                        if (existingTransaction) {
-                                          deleteKeuangan(existingTransaction.id);
-                                        }
-                                      }
-                                    }}
-                                    className={`w-10 h-10 rounded-xl flex items-center justify-center mx-auto transition-all active:scale-90 ${
-                                      kas.status === 'lunas' 
-                                        ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-100' 
-                                        : 'bg-slate-100 text-slate-300 hover:bg-slate-200'
-                                    }`}
-                                    title={kas.status === 'lunas' ? `Lunas pada ${kas.tanggalBayar}` : 'Klik untuk lunasi'}
-                                  >
-                                    {kas.status === 'lunas' ? <CheckCircle2 className="w-5 h-5" /> : <div className="w-2 h-2 rounded-full bg-slate-300"></div>}
-                                  </button>
+                                      }}
+                                      className={`w-10 h-10 rounded-xl flex items-center justify-center mx-auto transition-all active:scale-90 ${
+                                        kas.status === 'lunas' 
+                                          ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-100' 
+                                          : 'bg-slate-100 text-slate-300 hover:bg-slate-200'
+                                      }`}
+                                      title={kas.status === 'lunas' ? `Lunas pada ${kas.tanggalBayar}` : 'Klik untuk lunasi'}
+                                    >
+                                      {kas.status === 'lunas' ? <CheckCircle2 className="w-5 h-5" /> : <div className="w-2 h-2 rounded-full bg-slate-300"></div>}
+                                    </button>
+                                    {kas.status !== 'lunas' && anggota.noHp && (
+                                      <a
+                                        href={`https://wa.me/${anggota.noHp.replace(/^0/, '62')}?text=Halo%20${anggota.nama},%20mengingatkan%20untuk%20pembayaran%20Kas%20Wajib%20HIMARS%20bulan%20${bulan}%20sebesar%20Rp${kas.nominal.toLocaleString('id-ID')}.%20Terima%20kasih!`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-[8px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full hover:bg-emerald-100 transition-colors uppercase tracking-widest"
+                                        title="Ingatkan via WhatsApp"
+                                      >
+                                        Ingatkan
+                                      </a>
+                                    )}
+                                  </div>
                                   <div className="mt-2 text-[9px] font-black text-slate-400 uppercase tracking-widest">
                                     {formatRupiah(kas.nominal)}
                                   </div>

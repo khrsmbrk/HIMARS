@@ -8,7 +8,7 @@ import {
   Tag, FileText, ExternalLink, RefreshCw
 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   DndContext,
   DragOverlay,
@@ -31,7 +31,7 @@ import {
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import ConfirmModal from '../../components/ConfirmModal';
-import { kirimKeSheet } from '../../utils/kirimKeSheet';
+import ProkerWorkflow from '../../components/ProkerWorkflow';
 
 // --- Types ---
 type Status = Proker['status'];
@@ -47,7 +47,8 @@ interface SortableItemProps {
   compact?: boolean;
 }
 
-const SortableItem: React.FC<SortableItemProps> = ({ id, proker, onDelete, onStatusChange, onEdit, compact }) => {
+const SortableItem = React.memo<SortableItemProps>(({ id, proker, onDelete, onStatusChange, onEdit, compact }) => {
+  const { updateTahapProker } = useData();
   const {
     attributes,
     listeners,
@@ -214,9 +215,11 @@ const SortableItem: React.FC<SortableItemProps> = ({ id, proker, onDelete, onSta
           </button>
         </div>
       )}
+
+      <ProkerWorkflow proker={proker} onUpdateTahap={updateTahapProker} />
     </div>
   );
-}
+});
 
 export default function ProkerAdmin() {
   const { 
@@ -264,7 +267,8 @@ export default function ProkerAdmin() {
   // Run automations on mount
   useEffect(() => {
     runAutomations();
-  }, [runAutomations]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // --- AI Processing Simulation ---
   const handleAIProcess = async (inboxId: number) => {
@@ -365,13 +369,9 @@ export default function ProkerAdmin() {
 
   const handleStatusChange = async (id: number, status: Status) => {
     const proker = data.proker.find(p => p.id === id);
-    if (proker) {
-      await kirimKeSheet({
-        nama_proker: proker.namaProker,
-        status_baru: status,
-        aksi: 'Update Status'
-      }, 'Tracking Proker');
-    }
+    if (!proker || proker.status === status) return;
+    
+    // Update local state first for immediate UI feedback
     updateProkerStatus(id, status);
   };
 
@@ -421,16 +421,6 @@ export default function ProkerAdmin() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Sync to Google Sheets
-    await kirimKeSheet({
-      nama_proker: formData.namaProker,
-      departemen: formData.departemen,
-      ketua_pelaksana: formData.ketuaPelaksana,
-      tanggal_mulai: formData.tanggalMulai,
-      status: formData.status,
-      aksi: 'Tambah'
-    }, 'Tracking Proker');
-
     addProker(formData);
     setShowAdd(false);
     setFormData({
@@ -458,15 +448,8 @@ export default function ProkerAdmin() {
   }, []);
 
   return (
-    <div className="max-w-[1600px] mx-auto px-4">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-3xl font-black text-himars-dark uppercase tracking-tight">Planner Proker</h1>
-          <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] mt-1">
-            Visualisasikan Agenda & Progres Program Kerja
-          </p>
-        </div>
-        
+    <div className="w-full mx-auto px-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-end gap-4 mb-8">
         <div className="flex items-center gap-3">
           <div className="flex bg-slate-100 p-1 rounded-xl mr-2 overflow-x-auto max-w-[500px]">
             {[
@@ -499,7 +482,7 @@ export default function ProkerAdmin() {
             onClick={() => setShowAdd(true)}
             className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-blue-700 transition-all flex items-center gap-2 shadow-lg shadow-blue-200"
           >
-            <Plus className="w-4 h-4" /> Tambah Proker
+            <Plus className="w-4 h-4" /> PROKER
           </button>
         </div>
       </div>
@@ -797,7 +780,7 @@ export default function ProkerAdmin() {
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowAdd(false)}
-              className="absolute inset-0 bg-himars-dark/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             />
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -865,7 +848,7 @@ export default function ProkerAdmin() {
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md bg-white rounded-[2.5rem] p-8 shadow-2xl overflow-hidden"
+              className="relative w-full max-w-md bg-white rounded-[2.5rem] p-8 shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"
             >
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-200">
@@ -955,6 +938,7 @@ export default function ProkerAdmin() {
                     </select>
                   </div>
                 </div>
+
                 <button type="submit" className="w-full py-4 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-blue-200 hover:bg-blue-700 transition-all mt-4">Update Card</button>
               </form>
             </motion.div>
@@ -984,7 +968,7 @@ export default function ProkerAdmin() {
 
 import { useDroppable } from '@dnd-kit/core';
 
-const KanbanColumn: React.FC<{ 
+const KanbanColumn = React.memo<{ 
   id: Status; 
   title: string; 
   color: string; 
@@ -992,7 +976,7 @@ const KanbanColumn: React.FC<{
   onDelete: (id: number) => void;
   onStatusChange: (id: number, status: Status) => void;
   onEdit: (proker: Proker) => void;
-}> = ({ id, title, color, prokers, onDelete, onStatusChange, onEdit }) => {
+}>(({ id, title, color, prokers, onDelete, onStatusChange, onEdit }) => {
   const { setNodeRef, isOver } = useDroppable({ id });
 
   return (
@@ -1039,9 +1023,9 @@ const KanbanColumn: React.FC<{
       </div>
     </div>
   );
-};
+});
 
-const CalendarDay: React.FC<{ 
+const CalendarDay = React.memo<{ 
   date: Date; 
   isToday: boolean; 
   prokers: Proker[];
@@ -1049,7 +1033,7 @@ const CalendarDay: React.FC<{
   onDelete: (id: number) => void;
   onStatusChange: (id: number, status: Status) => void;
   onEdit: (proker: Proker) => void;
-}> = ({ date, isToday, prokers, view, onDelete, onStatusChange, onEdit }) => {
+}>(({ date, isToday, prokers, view, onDelete, onStatusChange, onEdit }) => {
   const dateStr = date.toISOString().split('T')[0];
   const { setNodeRef, isOver } = useDroppable({ id: `date-${dateStr}` });
 
@@ -1108,5 +1092,5 @@ const CalendarDay: React.FC<{
       )}
     </div>
   );
-};
+});
 

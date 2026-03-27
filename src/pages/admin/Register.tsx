@@ -17,6 +17,7 @@ export default function Register() {
   const [error, setError] = useState('');
 
   const departments = [
+    { id: 'pembina', title: 'Pembina' },
     { id: 'ketua-wakil', title: 'Ketua & Wakil' },
     { id: 'sekretaris', title: 'Sekretaris' },
     { id: 'bendahara', title: 'Bendahara' },
@@ -69,14 +70,14 @@ export default function Register() {
   const [success, setSuccess] = useState('');
 
   return (
-    <div className="min-h-screen bg-liquid flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-slate-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <Link to="/" className="flex justify-center items-center gap-2 mb-6 text-slate-400 hover:text-himars-peach transition-colors uppercase tracking-widest font-black text-xs">
+        <Link to="/" className="flex justify-center items-center gap-2 mb-6 text-slate-400 hover:text-emerald-500 transition-colors uppercase tracking-widest font-black text-xs">
           <ArrowLeft className="w-4 h-4" />
           <span>Kembali ke Beranda</span>
         </Link>
         <div className="flex justify-center">
-          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-2xl border-4 border-himars-peach overflow-hidden p-2">
+          <div className="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-2xl border-4 border-emerald-500 overflow-hidden p-2">
             <img 
               src={data.settings.logoUrl || undefined} 
               alt={`${data.settings.siteName} Logo`} 
@@ -84,11 +85,11 @@ export default function Register() {
             />
           </div>
         </div>
-        <h2 className="mt-6 text-center text-4xl font-black text-himars-dark uppercase tracking-tighter">
-          Daftar Akun Baru
+        <h2 className="mt-6 text-center text-4xl font-black text-slate-900 uppercase tracking-tighter">
+          Daftar Akun Admin
         </h2>
         <p className="mt-2 text-center text-sm text-slate-500 font-medium">
-          Bergabung dengan Keluarga Besar {data.settings.siteName}
+          Pendaftaran khusus untuk Pengurus / Administrator {data.settings.siteName}
         </p>
       </div>
 
@@ -121,7 +122,7 @@ export default function Register() {
                   required
                   value={formData.nama}
                   onChange={(e) => setFormData({...formData, nama: e.target.value})}
-                  className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-himars-peach focus:border-himars-peach text-sm transition-all"
+                  className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm transition-all"
                   placeholder="Nama Lengkap"
                 />
               </div>
@@ -137,7 +138,7 @@ export default function Register() {
                   required
                   value={formData.department}
                   onChange={(e) => setFormData({...formData, department: e.target.value})}
-                  className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-himars-peach focus:border-himars-peach text-sm transition-all appearance-none"
+                  className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm transition-all appearance-none"
                 >
                   <option value="">Pilih Departemen</option>
                   {departments.map(d => (
@@ -158,7 +159,7 @@ export default function Register() {
                   required
                   value={formData.username}
                   onChange={(e) => setFormData({...formData, username: e.target.value})}
-                  className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-himars-peach focus:border-himars-peach text-sm transition-all"
+                  className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm transition-all"
                   placeholder="Username atau email"
                 />
               </div>
@@ -175,7 +176,7 @@ export default function Register() {
                   required
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
-                  className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-himars-peach focus:border-himars-peach text-sm transition-all"
+                  className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm transition-all"
                   placeholder="Masukkan password atau NIM"
                 />
               </div>
@@ -192,7 +193,7 @@ export default function Register() {
                   required
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-                  className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-himars-peach focus:border-himars-peach text-sm transition-all"
+                  className="block w-full pl-10 pr-3 py-3 border border-slate-200 rounded-2xl shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 text-sm transition-all"
                   placeholder="Ulangi password atau NIM"
                 />
               </div>
@@ -201,7 +202,7 @@ export default function Register() {
             <div>
               <button
                 type="submit"
-                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-xl shadow-himars-peach/20 text-sm font-black text-white bg-himars-peach hover:bg-himars-peach/90 transition-all active:scale-95 uppercase tracking-widest"
+                className="w-full flex justify-center py-4 px-4 border border-transparent rounded-2xl shadow-xl shadow-emerald-500/20 text-sm font-black text-white bg-emerald-500 hover:bg-emerald-500/90 transition-all active:scale-95 uppercase tracking-widest"
               >
                 Daftar Sekarang
               </button>
@@ -211,7 +212,7 @@ export default function Register() {
           <div className="mt-8 text-center">
             <p className="text-sm text-slate-600 font-medium">
               Sudah punya akun?{' '}
-              <Link to="/login" className="font-black text-himars-green hover:text-himars-green/80">
+              <Link to="/login" className="font-black text-emerald-600 hover:text-emerald-600/80">
                 Masuk di sini
               </Link>
             </p>

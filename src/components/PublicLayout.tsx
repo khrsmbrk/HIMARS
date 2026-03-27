@@ -9,6 +9,8 @@ export default function PublicLayout() {
   const [isStrukturOpen, setIsStrukturOpen] = useState(false);
   const [isFiturOpen, setIsFiturOpen] = useState(false);
   const location = useLocation();
+  const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+  const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
 
   const navLinks = [
     { name: 'Beranda', path: '/' },
@@ -91,7 +93,7 @@ export default function PublicLayout() {
                       <button
                         onClick={() => setIsFiturOpen(!isFiturOpen)}
                         className={`text-xs font-black uppercase tracking-widest transition-all flex items-center gap-1 ${
-                          ['/presensi', '/aspirasi', '/voting', '/gallery', '/calendar', '/pendaftaran'].includes(location.pathname)
+                          ['/presensi', '/aspirasi', '/voting', '/calendar', '/pendaftaran'].includes(location.pathname)
                             ? 'text-himars-peach'
                             : 'text-slate-500 hover:text-himars-peach'
                         }`}
@@ -106,7 +108,6 @@ export default function PublicLayout() {
                               { id: 'presensi', title: 'Presensi QR', path: '/presensi' },
                               { id: 'aspirasi', title: 'Kotak Aspirasi', path: '/aspirasi' },
                               { id: 'voting', title: 'E-Voting', path: '/voting' },
-                              { id: 'gallery', title: 'Galeri', path: '/gallery' },
                               { id: 'calendar', title: 'Kalender', path: '/calendar' },
                               { id: 'pendaftaran', title: 'Pendaftaran', path: '/pendaftaran' },
                             ].map(item => (
@@ -139,12 +140,21 @@ export default function PublicLayout() {
                   </Link>
                 );
               })}
-              <Link
-                to="/login"
-                className="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest text-himars-peach bg-himars-peach/10 hover:bg-himars-peach/20 transition-all active:scale-95 border border-himars-peach/20"
-              >
-                Masuk
-              </Link>
+              {isLoggedIn ? (
+                <Link
+                  to={currentUser.role === 'admin' || currentUser.role === 'superadmin' ? '/admin/dashboard' : '/anggota/profil'}
+                  className="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest text-himars-peach bg-himars-peach/10 hover:bg-himars-peach/20 transition-all active:scale-95 border border-himars-peach/20"
+                >
+                  {currentUser.role === 'admin' || currentUser.role === 'superadmin' ? 'Dashboard' : 'Profil'}
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  className="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-xs font-black uppercase tracking-widest text-himars-peach bg-himars-peach/10 hover:bg-himars-peach/20 transition-all active:scale-95 border border-himars-peach/20"
+                >
+                  Masuk
+                </Link>
+              )}
             </nav>
 
             {/* Mobile menu button */}
@@ -206,7 +216,7 @@ export default function PublicLayout() {
                     <div key={link.name} className="space-y-1">
                       <div
                         className={`block px-3 py-2 rounded-md text-base font-medium ${
-                          ['/presensi', '/aspirasi', '/voting', '/gallery', '/calendar', '/pendaftaran'].includes(location.pathname)
+                          ['/presensi', '/aspirasi', '/voting', '/calendar', '/pendaftaran'].includes(location.pathname)
                             ? 'bg-orange-50 text-orange-600'
                             : 'text-slate-700'
                         }`}
@@ -218,7 +228,6 @@ export default function PublicLayout() {
                           { id: 'presensi', title: 'Presensi QR', path: '/presensi' },
                           { id: 'aspirasi', title: 'Kotak Aspirasi', path: '/aspirasi' },
                           { id: 'voting', title: 'E-Voting', path: '/voting' },
-                          { id: 'gallery', title: 'Galeri', path: '/gallery' },
                           { id: 'calendar', title: 'Kalender', path: '/calendar' },
                           { id: 'pendaftaran', title: 'Pendaftaran', path: '/pendaftaran' },
                         ].map(item => (
@@ -250,13 +259,23 @@ export default function PublicLayout() {
                   </Link>
                 );
               })}
-              <Link
-                to="/login"
-                onClick={() => setIsMenuOpen(false)}
-                className="block px-3 py-2 rounded-md text-base font-medium text-orange-600 hover:bg-orange-50"
-              >
-                Masuk
-              </Link>
+              {isLoggedIn ? (
+                <Link
+                  to={currentUser.role === 'admin' || currentUser.role === 'superadmin' ? '/admin/dashboard' : '/anggota/profil'}
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-orange-600 hover:bg-orange-50"
+                >
+                  {currentUser.role === 'admin' || currentUser.role === 'superadmin' ? 'Dashboard' : 'Profil'}
+                </Link>
+              ) : (
+                <Link
+                  to="/login"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-orange-600 hover:bg-orange-50"
+                >
+                  Masuk
+                </Link>
+              )}
             </div>
           </div>
         )}
@@ -272,7 +291,10 @@ export default function PublicLayout() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-20">
             <div>
-              <h3 className="text-xl font-black text-himars-peach uppercase tracking-tighter mb-6">HIMARS UMLA</h3>
+              <div className="flex items-center gap-3 mb-6">
+                <img src={data.settings.logoUrl || "https://picsum.photos/seed/logo/200/200"} alt="Logo" className="w-10 h-10 object-contain" />
+                <h3 className="text-xl font-black text-himars-peach uppercase tracking-tighter">HIMARS UMLA</h3>
+              </div>
               <p className="text-slate-500 text-sm leading-relaxed font-medium">
                 Himpunan Mahasiswa Program Studi S1 Administrasi Rumah Sakit Universitas Muhammadiyah Lamongan. Mewujudkan administrator kesehatan yang profesional, inovatif, dan Islami.
               </p>

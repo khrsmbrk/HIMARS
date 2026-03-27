@@ -4,7 +4,6 @@ import { Mail, Plus, Search, Trash2, FileText, Download, CheckCircle, Clock, Arc
 import { motion, AnimatePresence } from 'motion/react';
 import GenerateSuratModal from '../../components/GenerateSuratModal';
 import ConfirmModal from '../../components/ConfirmModal';
-import { kirimKeSheet } from '../../utils/kirimKeSheet';
 
 export default function SuratAdmin() {
   const { data, addSurat, updateSuratStatus, deleteSurat } = useData();
@@ -45,16 +44,6 @@ export default function SuratAdmin() {
       nomorSurat: formData.jenis === 'Keluar' && !formData.nomorSurat ? generateNomorSurat() : formData.nomorSurat
     };
 
-    // Sync to Google Sheets
-    await kirimKeSheet({
-      nomor_surat: finalFormData.nomorSurat,
-      jenis: finalFormData.jenis,
-      perihal: finalFormData.perihal,
-      pengirim_penerima: finalFormData.pengirimPenerima,
-      tanggal_surat: finalFormData.tanggalSurat,
-      status: finalFormData.status
-    }, 'E-Arsip Surat');
-
     addSurat(finalFormData);
     setShowAdd(false);
     setFormData({
@@ -76,7 +65,7 @@ export default function SuratAdmin() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="w-full mx-auto">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl font-black text-himars-dark uppercase tracking-tight">E-Arsip Surat</h1>
@@ -124,9 +113,9 @@ export default function SuratAdmin() {
             </button>
             <button
               onClick={() => setShowAdd(true)}
-              className="w-full sm:w-auto px-6 py-3 bg-himars-dark text-white rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-himars-dark/90 transition-all flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-4 py-2 bg-himars-dark text-white rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-himars-dark/90 transition-all flex items-center justify-center gap-2"
             >
-              <Plus className="w-4 h-4" /> Tambah Surat {activeTab}
+              <Plus className="w-4 h-4" /> SURAT {activeTab.toUpperCase()}
             </button>
           </div>
         </div>
@@ -175,12 +164,6 @@ export default function SuratAdmin() {
                         {item.status === 'Diproses' && (
                           <button 
                             onClick={async () => {
-                              await kirimKeSheet({
-                                nomor_surat: item.nomorSurat,
-                                perihal: item.perihal,
-                                status: 'Selesai',
-                                aksi: 'Update Status Surat'
-                              }, 'E-Arsip Surat');
                               updateSuratStatus(item.id, 'Selesai');
                             }} 
                             className="p-2 text-slate-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-xl transition-all" 
@@ -192,12 +175,6 @@ export default function SuratAdmin() {
                         {item.status === 'Selesai' && (
                           <button 
                             onClick={async () => {
-                              await kirimKeSheet({
-                                nomor_surat: item.nomorSurat,
-                                perihal: item.perihal,
-                                status: 'Diarsipkan',
-                                aksi: 'Update Status Surat'
-                              }, 'E-Arsip Surat');
                               updateSuratStatus(item.id, 'Diarsipkan');
                             }} 
                             className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-200 rounded-xl transition-all" 
@@ -232,7 +209,7 @@ export default function SuratAdmin() {
             <motion.div 
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               onClick={() => setShowAdd(false)}
-              className="absolute inset-0 bg-himars-dark/80 backdrop-blur-sm"
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
             />
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -291,14 +268,6 @@ export default function SuratAdmin() {
         }}
         onConfirm={async () => {
           if (itemToDelete) {
-            const surat = data.surat.find(s => s.id === itemToDelete);
-            if (surat) {
-              await kirimKeSheet({
-                nomor_surat: surat.nomorSurat,
-                perihal: surat.perihal,
-                aksi: 'Hapus Surat'
-              }, 'E-Arsip Surat');
-            }
             deleteSurat(itemToDelete);
           }
         }}
