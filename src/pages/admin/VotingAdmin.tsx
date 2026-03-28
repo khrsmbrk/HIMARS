@@ -90,12 +90,14 @@ export default function VotingAdmin() {
   );
 
   const liveSession = liveChartSession ? data.voting.find(v => v.id === liveChartSession) : null;
+  const CHART_COLORS = ['#3b82f6', '#ef4444', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899'];
+  
   const chartData = liveSession ? liveSession.kandidat.map((k, idx) => ({
     name: `Paslon ${idx + 1}`,
     kandidat: k.nama,
     foto: k.foto,
     suara: k.jumlahSuara,
-    fill: idx % 2 === 0 ? '#f9a875' : '#1e293b' // himars-peach and himars-dark
+    fill: CHART_COLORS[idx % CHART_COLORS.length]
   })) : [];
 
   const CustomXAxisTick = (props: any) => {
@@ -226,12 +228,12 @@ export default function VotingAdmin() {
                     </button>
                     {item.status === 'Belum Mulai' && (
                       <button onClick={() => updateVotingStatus(item.id, 'Aktif')} className="flex items-center gap-2 px-6 py-3 bg-orange-50 text-orange-600 hover:bg-orange-100 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
-                        <Play className="w-4 h-4" /> Buka Pemilihan
+                        <Play className="w-4 h-4" /> Mulai Voting
                       </button>
                     )}
                     {item.status === 'Aktif' && (
-                      <button onClick={() => updateVotingStatus(item.id, 'Selesai')} className="flex items-center gap-2 px-6 py-3 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
-                        <CheckCircle className="w-4 h-4" /> Tutup Pemilihan
+                      <button onClick={() => updateVotingStatus(item.id, 'Selesai')} className="flex items-center gap-2 px-6 py-3 bg-red-50 text-red-600 hover:bg-red-100 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                        <CheckCircle className="w-4 h-4" /> Hentikan Voting
                       </button>
                     )}
                     <button 
@@ -303,9 +305,9 @@ export default function VotingAdmin() {
                   <h4 className="text-sm font-black text-himars-dark uppercase tracking-widest mb-4">Daftar Kandidat (Minimal 2)</h4>
                   
                   {formData.kandidat.map((k, idx) => (
-                    <div key={k.id} className="bg-slate-50 p-4 rounded-2xl mb-4 relative">
-                      <button type="button" onClick={() => handleRemoveKandidat(k.id)} className="absolute top-4 right-4 text-red-400 hover:text-red-600">
-                        <Trash2 className="w-4 h-4" />
+                    <div key={k.id} className="bg-slate-50 p-4 rounded-2xl mb-4 relative pr-16">
+                      <button type="button" onClick={() => handleRemoveKandidat(k.id)} className="absolute top-4 right-4 p-2.5 bg-red-100 text-red-600 hover:bg-red-200 hover:text-red-700 rounded-xl transition-colors shadow-sm">
+                        <Trash2 className="w-5 h-5" />
                       </button>
                       <p className="text-[10px] font-black text-himars-peach uppercase tracking-widest mb-2">Kandidat {idx + 1}</p>
                       <p className="font-bold text-sm">{k.nama}</p>

@@ -27,7 +27,7 @@ export default function Dokumen() {
   return (
     <div className="bg-slate-50 min-h-screen pb-24 overflow-x-hidden">
       {/* Cinematic Header */}
-      <section className="bg-white text-slate-900 py-32 relative overflow-hidden border-b border-slate-200">
+      <section className="bg-white text-slate-900 min-h-[calc(100vh-80px)] flex items-center relative overflow-hidden border-b border-slate-200">
         <div className="absolute inset-0 z-0">
           <img 
             src={data.settings.dokumenHeroImageUrl || undefined}
@@ -37,17 +37,14 @@ export default function Dokumen() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-50"></div>
         </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="text-center max-w-3xl mx-auto"
           >
-            <span className="inline-block text-emerald-500 font-bold tracking-[0.3em] uppercase text-xs mb-6">
-              Sumber Daya & Transparansi
-            </span>
-            <h1 className="text-5xl md:text-7xl font-black mb-8 leading-tight tracking-tighter uppercase">Dokumen Publik</h1>
+            <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight tracking-tighter uppercase">Dokumen Publik</h1>
             <p className="text-xl text-slate-600 font-light">
               Transparansi organisasi melalui publikasi laporan, proposal, dan dokumen umum lainnya.
             </p>
@@ -127,13 +124,13 @@ export default function Dokumen() {
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-32 bg-white rounded-[3rem] border border-slate-200 shadow-xl"
+            className="text-center py-32 bg-white rounded-[3rem] border border-slate-200 shadow-xl flex flex-col items-center justify-center"
           >
             <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-6 border border-slate-200">
-              <FileText className="w-10 h-10 text-slate-500" />
+              <File className="w-10 h-10 text-slate-400" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-900 mb-2">Tidak ada dokumen tersedia</h3>
-            <p className="text-slate-500 font-light">Dokumen publik akan dicantumkan di sini setelah diterbitkan.</p>
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Belum ada dokumen yang dipublikasikan</h3>
+            <p className="text-slate-500 font-medium text-sm">Dokumen publik akan dicantumkan di sini setelah diterbitkan oleh admin.</p>
           </motion.div>
         )}
       </div>

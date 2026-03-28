@@ -100,22 +100,15 @@ export default function Presensi() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 py-20 px-4 relative overflow-hidden">
+    <div className="min-h-[calc(100vh-80px)] bg-slate-50 flex items-center justify-center px-4 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-900/10 blur-[120px] rounded-full mix-blend-multiply"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-orange-900/10 blur-[120px] rounded-full mix-blend-multiply"></div>
       </div>
 
-      <div className="max-w-xl mx-auto relative z-10 pt-16">
-        <div className="text-center mb-12">
-          <motion.div 
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            className="w-20 h-20 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/10"
-          >
-            <UserCheck className="w-10 h-10 text-emerald-500" />
-          </motion.div>
+      <div className="max-w-xl w-full mx-auto relative z-10 py-12">
+        <div className="text-center mb-8">
           <h1 className="text-4xl font-black text-slate-900 uppercase tracking-tight">Presensi Mandiri</h1>
           <p className="text-slate-600 font-bold uppercase tracking-widest text-xs mt-2">Scan QR Acara & Masukkan NIM Anda</p>
         </div>
@@ -164,19 +157,25 @@ export default function Presensi() {
 
               <div className="text-left">
                 <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2 ml-1">Pilih Acara Manual</label>
-                <select
-                  onChange={(e) => {
-                    const event = data.events.find(n => n.title === e.target.value);
-                    if (event) setScannedEvent(event);
-                  }}
-                  className="w-full px-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500/50 transition-all font-bold text-slate-900 text-sm outline-none"
-                  defaultValue=""
-                >
-                  <option value="" disabled className="text-slate-500">-- Pilih Acara --</option>
-                  {data.events.map(event => (
-                    <option key={event.id} value={event.title} className="text-slate-900 bg-white">{event.title}</option>
-                  ))}
-                </select>
+                {data.events.length === 0 ? (
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-center">
+                    <p className="text-sm text-slate-500 font-medium">Belum ada acara aktif. Hubungi operator jika kamu sedang menghadiri kegiatan.</p>
+                  </div>
+                ) : (
+                  <select
+                    onChange={(e) => {
+                      const event = data.events.find(n => n.title === e.target.value);
+                      if (event) setScannedEvent(event);
+                    }}
+                    className="w-full px-4 py-4 bg-slate-50 border-2 border-slate-200 rounded-2xl focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500/50 transition-all font-bold text-slate-900 text-sm outline-none"
+                    defaultValue=""
+                  >
+                    <option value="" disabled className="text-slate-500">-- Pilih Acara --</option>
+                    {data.events.map(event => (
+                      <option key={event.id} value={event.title} className="text-slate-900 bg-white">{event.title}</option>
+                    ))}
+                  </select>
+                )}
               </div>
             </div>
           ) : (

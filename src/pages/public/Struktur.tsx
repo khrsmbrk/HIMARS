@@ -28,7 +28,7 @@ export default function Struktur() {
     { id: 'ketua-wakil', title: 'Ketua & Wakil', icon: Shield, color: 'hover:bg-[#1a1a1a]' },
     { id: 'sekretaris', title: 'Sekretaris', icon: FileText, color: 'hover:bg-emerald-500' },
     { id: 'bendahara', title: 'Bendahara', icon: Wallet, color: 'hover:bg-orange-500' },
-    { id: 'paik', title: 'PENAK', icon: Users, color: 'hover:bg-orange-600' },
+    { id: 'penak', title: 'PENAK', icon: Users, color: 'hover:bg-orange-600' },
     { id: 'litbang', title: 'Litbang', icon: Newspaper, color: 'hover:bg-orange-600' },
     { id: 'pengmas', title: 'PENGAPMAS', icon: Users, color: 'hover:bg-purple-600' },
     { id: 'medkom', title: 'Medkom', icon: Newspaper, color: 'hover:bg-red-600' },
@@ -37,7 +37,7 @@ export default function Struktur() {
   return (
     <div className="bg-slate-50 min-h-screen pb-24 text-slate-900 selection:bg-orange-500/30">
       {/* Cinematic Header */}
-      <section className="relative py-32 overflow-hidden mb-20 border-b border-slate-200">
+      <section className="relative min-h-[calc(100vh-80px)] flex items-center overflow-hidden mb-20 border-b border-slate-200">
         <div className="absolute inset-0 z-0">
           <img 
             src={data.settings.strukturHeroImageUrl || undefined}
@@ -47,12 +47,12 @@ export default function Struktur() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-50"></div>
         </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-12">
           <div className="text-center max-w-3xl mx-auto">
             <motion.span 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="text-orange-500 font-bold tracking-[0.3em] uppercase text-xs mb-4 block"
+              className="text-himars-peach font-bold tracking-[0.3em] uppercase text-xs mb-4 block"
             >
               Struktur Organisasi
             </motion.span>
@@ -69,7 +69,7 @@ export default function Struktur() {
               transition={{ delay: 0.1 }}
               className="text-lg text-slate-600 font-medium uppercase tracking-widest text-xs"
             >
-              Himpunan Mahasiswa Administrasi Rumah Sakit Periode 2023/2024
+              Himpunan Mahasiswa Administrasi Rumah Sakit Periode {data.settings.periode || '2023/2024'}
             </motion.p>
           </div>
         </div>

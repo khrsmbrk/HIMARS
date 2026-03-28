@@ -213,7 +213,7 @@ export default function SuratAdmin() {
             />
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative glass-ios rounded-[3rem] p-10 max-w-md w-full shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 overflow-hidden max-h-[90vh] overflow-y-auto"
+              className="relative glass-ios rounded-[3rem] p-10 max-w-2xl w-full shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 overflow-hidden max-h-[90vh] overflow-y-auto"
             >
               <h3 className="text-2xl font-black text-himars-dark uppercase tracking-tight mb-6">Tambah Surat {activeTab}</h3>
               <form onSubmit={handleSubmit} className="space-y-4">

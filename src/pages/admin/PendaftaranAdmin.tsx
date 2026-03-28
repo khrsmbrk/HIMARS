@@ -234,7 +234,7 @@ export default function PendaftaranAdmin() {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-3xl font-black text-slate-900 tracking-tight">Pendaftaran</h1>
-          <p className="text-slate-500 mt-1">Kelola data pendaftar dan jadwal open recruitment</p>
+          <p className="text-slate-500 mt-1">Kelola pendaftaran dan event organisasi HIMARS</p>
         </div>
         <div className="flex bg-slate-100 p-1 rounded-xl">
           <button
@@ -341,17 +341,17 @@ export default function PendaftaranAdmin() {
                       <td className="p-4 text-right">
                         <button
                           onClick={() => setViewingPendaftar(pendaftar)}
-                          className="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition-colors mr-2"
+                          className="p-3 text-slate-400 hover:text-white hover:bg-blue-500 rounded-xl transition-all shadow-sm hover:shadow-blue-500/20 mr-2"
                           title="Lihat Detail"
                         >
-                          <Eye className="w-4 h-4" />
+                          <Eye className="w-5 h-5" />
                         </button>
                         <button
                           onClick={() => handleDeletePendaftarClick(pendaftar.id)}
-                          className="p-2 text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                          className="p-3 text-slate-400 hover:text-white hover:bg-rose-500 rounded-xl transition-all shadow-sm hover:shadow-rose-500/20"
                           title="Hapus"
                         >
-                          <Trash2 className="w-4 h-4" />
+                          <Trash2 className="w-5 h-5" />
                         </button>
                       </td>
                     </tr>

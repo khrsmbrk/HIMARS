@@ -284,7 +284,12 @@ export default function Keuangan() {
                         axisLine={false} 
                         tickLine={false} 
                         tick={{fontSize: 10, fontWeight: 'bold'}}
-                        tickFormatter={(value) => `Rp ${value / 1000}k`}
+                        tickFormatter={(value) => {
+                          if (value >= 1000000000) return `Rp ${value / 1000000000}M`;
+                          if (value >= 1000000) return `Rp ${value / 1000000}jt`;
+                          if (value >= 1000) return `Rp ${value / 1000}k`;
+                          return `Rp ${value}`;
+                        }}
                       />
                       <Tooltip 
                         contentStyle={{borderRadius: '1rem', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)'}}
@@ -436,7 +441,7 @@ export default function Keuangan() {
                           <td className="px-8 py-5 text-sm font-bold text-slate-500">{k.tanggal}</td>
                           <td className="px-8 py-5">
                             <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                              k.jenis === 'pemasukan' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'
+                              k.jenis === 'pemasukan' ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20' : 'bg-rose-500 text-white shadow-sm shadow-rose-500/20'
                             }`}>
                               {k.kategori === 'kampus' ? 'Dana Kampus' : 
                                k.kategori === 'sponsor' ? 'Sponsor' :

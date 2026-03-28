@@ -223,6 +223,16 @@ export default function Settings() {
                     />
                   </div>
                   <div>
+                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Periode Kepengurusan</label>
+                    <input
+                      type="text"
+                      value={formData.periode || ''}
+                      onChange={e => setFormData({...formData, periode: e.target.value})}
+                      placeholder="Contoh: 2023/2024"
+                      className="w-full px-4 py-3 bg-slate-50 border-none rounded-2xl focus:ring-2 focus:ring-himars-peach font-bold text-sm"
+                    />
+                  </div>
+                  <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Logo Website</label>
                     <div className="flex items-center gap-4">
                       {formData.logoUrl && (
@@ -297,7 +307,7 @@ export default function Settings() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4">
+            <div className="sticky bottom-6 z-50 flex items-center justify-between p-4 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-3xl shadow-2xl mt-8">
               <AnimatePresence>
                 {isSaved && (
                   <motion.span 
@@ -472,12 +482,14 @@ export default function Settings() {
                     </button>
                   </div>
                 ))}
-                <button
-                  onClick={handleSubmit}
-                  className="w-full py-4 bg-himars-dark text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl"
-                >
-                  Simpan Struktur Organisasi
-                </button>
+                <div className="sticky bottom-6 z-50 p-4 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-3xl shadow-2xl mt-8">
+                  <button
+                    onClick={handleSubmit}
+                    className="w-full py-4 bg-himars-dark text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl"
+                  >
+                    Simpan Struktur Organisasi
+                  </button>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -516,12 +528,14 @@ export default function Settings() {
                   />
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Gunakan URL embed (misal: https://www.youtube.com/embed/VIDEO_ID)</p>
                 </div>
-                <button
-                  onClick={handleSubmit}
-                  className="w-full py-4 bg-himars-dark text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl"
-                >
-                  Simpan Media
-                </button>
+                <div className="sticky bottom-6 z-50 p-4 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-3xl shadow-2xl mt-8">
+                  <button
+                    onClick={handleSubmit}
+                    className="w-full py-4 bg-himars-dark text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl"
+                  >
+                    Simpan Media
+                  </button>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -817,7 +831,7 @@ export default function Settings() {
               </div>
             </div>
 
-            <div className="flex items-center justify-between pt-4">
+            <div className="sticky bottom-6 z-50 flex items-center justify-between p-4 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-3xl shadow-2xl mt-8">
               <AnimatePresence>
                 {isSaved && (
                   <motion.span 
@@ -876,12 +890,14 @@ export default function Settings() {
                   />
                   <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-2">Dukung format teks biasa. Baris baru akan diubah menjadi paragraf.</p>
                 </div>
-                <button
-                  onClick={handleSubmit}
-                  className="w-full py-4 bg-himars-dark text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl"
-                >
-                  Simpan Halaman Legal
-                </button>
+                <div className="sticky bottom-6 z-50 p-4 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-3xl shadow-2xl mt-8">
+                  <button
+                    onClick={handleSubmit}
+                    className="w-full py-4 bg-himars-dark text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl"
+                  >
+                    Simpan Halaman Legal
+                  </button>
+                </div>
               </div>
             </div>
           </motion.div>
@@ -966,12 +982,14 @@ export default function Settings() {
               </div>
             </div>
 
-            <button
-              type="submit"
-              className="w-full py-4 bg-himars-dark text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
-            >
-              <Save className="w-4 h-4" /> Simpan Pengaturan Surat
-            </button>
+            <div className="sticky bottom-6 z-50 p-4 bg-white/80 backdrop-blur-xl border border-slate-200 rounded-3xl shadow-2xl mt-8">
+              <button
+                type="submit"
+                className="w-full py-4 bg-himars-dark text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all flex items-center justify-center gap-2"
+              >
+                <Save className="w-4 h-4" /> Simpan Pengaturan Surat
+              </button>
+            </div>
           </motion.form>
         ) : null}
       </AnimatePresence>

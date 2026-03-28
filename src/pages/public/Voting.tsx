@@ -26,7 +26,7 @@ export default function Voting() {
       setIsEventCodeVerified(true);
       setError('');
     } else {
-      setError('Kode akses acara tidak valid.');
+      setError('Token tidak valid atau sesi belum dimulai.');
     }
   };
 
@@ -83,24 +83,18 @@ export default function Voting() {
   };
 
   return (
-    <div className="pt-24 pb-16 min-h-screen bg-slate-50 relative overflow-hidden">
+    <div className="min-h-[calc(100vh-80px)] flex items-center py-12 bg-slate-50 relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-emerald-900/10 blur-[120px] rounded-full mix-blend-multiply"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-orange-900/10 blur-[120px] rounded-full mix-blend-multiply"></div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="w-20 h-20 bg-emerald-500/10 border border-emerald-500/20 rounded-3xl flex items-center justify-center mx-auto mb-6 transform rotate-3 shadow-xl shadow-emerald-500/10"
-          >
-            <Vote className="w-10 h-10 text-emerald-500" />
-          </motion.div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
+        <div className="text-center max-w-3xl mx-auto mb-12">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="text-4xl md:text-5xl font-black text-slate-900 uppercase tracking-tight mb-6"
+            className="text-4xl md:text-5xl font-black text-slate-900 uppercase tracking-tight mb-4"
           >
             E-Voting HIMARS
           </motion.h1>
@@ -142,6 +136,23 @@ export default function Voting() {
                   initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
                   className="bg-white rounded-[3rem] p-8 md:p-12 shadow-xl border border-slate-200 backdrop-blur-xl"
                 >
+                  <div className="mb-10 grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="flex flex-col items-center text-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                      <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-black mb-3">1</div>
+                      <h4 className="font-bold text-slate-900 text-sm mb-1">Pilih Sesi & Token</h4>
+                      <p className="text-xs text-slate-500">Pilih sesi pemilihan aktif dan masukkan kode akses acara.</p>
+                    </div>
+                    <div className="flex flex-col items-center text-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                      <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-black mb-3">2</div>
+                      <h4 className="font-bold text-slate-900 text-sm mb-1">Pilih Kandidat</h4>
+                      <p className="text-xs text-slate-500">Pelajari visi misi dan tentukan pilihan kandidat terbaik Anda.</p>
+                    </div>
+                    <div className="flex flex-col items-center text-center p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                      <div className="w-10 h-10 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center font-black mb-3">3</div>
+                      <h4 className="font-bold text-slate-900 text-sm mb-1">Konfirmasi NIM</h4>
+                      <p className="text-xs text-slate-500">Masukkan NIM Anda untuk memvalidasi dan merekam suara.</p>
+                    </div>
+                  </div>
                   <form onSubmit={handleVote} className="space-y-8">
                     <div>
                       <label className="block text-xs font-black text-slate-500 uppercase tracking-widest mb-4">Pilih Sesi Pemilihan</label>

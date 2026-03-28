@@ -21,7 +21,7 @@ export default function Register() {
     { id: 'ketua-wakil', title: 'Ketua & Wakil' },
     { id: 'sekretaris', title: 'Sekretaris' },
     { id: 'bendahara', title: 'Bendahara' },
-    { id: 'paik', title: 'PENAK' },
+    { id: 'penak', title: 'PENAK' },
     { id: 'litbang', title: 'Litbang' },
     { id: 'pengmas', title: 'PENGAPMAS' },
     { id: 'medkom', title: 'Medkom' },

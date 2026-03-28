@@ -66,11 +66,11 @@ export default function Dashboard() {
   const stats = [
     { 
       name: 'Total Anggota', 
-      value: data.anggota.length, 
+      value: data.users.length, 
       icon: Users, 
       color: 'text-orange-600', 
       bg: 'bg-orange-50', 
-      trend: data.anggota.length > 0 ? `+${data.anggota.length}` : '0', 
+      trend: data.users.length > 0 ? `+${data.users.length}` : '0', 
       isUp: true 
     },
     { 
@@ -102,11 +102,11 @@ export default function Dashboard() {
     },
     { 
       name: 'Proker Aktif', 
-      value: data.proker.filter(p => p.status === 'Sedang Berjalan' || p.status === 'Belum Mulai').length, 
+      value: data.proker.filter(p => p.status === 'Berjalan').length, 
       icon: Target, 
       color: 'text-rose-600', 
       bg: 'bg-rose-50', 
-      trend: `${data.proker.filter(p => p.status === 'Sedang Berjalan' || p.status === 'Belum Mulai').length} Aktif`, 
+      trend: `${data.proker.filter(p => p.status === 'Berjalan').length} Aktif`, 
       isUp: true 
     },
     { 

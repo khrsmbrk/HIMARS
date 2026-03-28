@@ -224,9 +224,9 @@ export default function InventarisAdmin() {
                         </td>
                         <td className="py-4 px-4">
                           <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                            item.status === 'Dikembalikan' ? 'bg-emerald-100 text-emerald-700' :
-                            item.status === 'Dipinjam' ? 'bg-amber-100 text-amber-700' :
-                            'bg-red-100 text-red-700'
+                            item.status === 'Dikembalikan' ? 'bg-emerald-500 text-white shadow-sm shadow-emerald-500/20' :
+                            item.status === 'Dipinjam' ? 'bg-amber-500 text-white shadow-sm shadow-amber-500/20' :
+                            'bg-red-500 text-white shadow-sm shadow-red-500/20'
                           }`}>
                             {item.status}
                           </span>

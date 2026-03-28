@@ -34,7 +34,7 @@ export default function UserManagement() {
     { id: 'ketua-wakil', title: 'Ketua & Wakil' },
     { id: 'sekretaris', title: 'Sekretaris' },
     { id: 'bendahara', title: 'Bendahara' },
-    { id: 'paik', title: 'PENAK' },
+    { id: 'penak', title: 'PENAK' },
     { id: 'litbang', title: 'Litbang' },
     { id: 'pengmas', title: 'PENGAPMAS' },
     { id: 'medkom', title: 'Medkom' },
@@ -94,34 +94,44 @@ export default function UserManagement() {
                             Administrator
                           </span>
                         ) : user.role === 'admin' ? (
-                          <select
-                            required
-                            value={user.department || ''}
-                            onChange={async (e) => {
-                              if (!e.target.value) return;
-                              
-                              updateUserDepartment(user.id, e.target.value);
-                              addActivityLog({
-                                userId: currentUser.id,
-                                username: currentUser.username,
-                                nama: currentUser.nama,
-                                action: 'Update User',
-                                details: `Admin ${currentUser.nama} memperbarui departemen ${user.nama} menjadi ${e.target.value}.`
-                              });
-                              setActionStatus({ message: `Departemen ${user.nama} diperbarui.`, type: 'success' });
-                              setTimeout(() => setActionStatus(null), 3000);
-                            }}
-                            className="text-xs font-bold bg-slate-50 border-none rounded-lg px-2 py-1 focus:ring-2 focus:ring-emerald-500"
-                          >
-                            <option value="">Pilih Departemen</option>
-                            {departments.map(d => (
-                              <option key={d.id} value={d.id}>{d.title}</option>
-                            ))}
-                          </select>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-black text-orange-600 uppercase tracking-widest bg-orange-100 px-2 py-1 rounded-lg border border-orange-200">
+                              Admin
+                            </span>
+                            <select
+                              required
+                              value={user.department || ''}
+                              onChange={async (e) => {
+                                if (!e.target.value) return;
+                                
+                                updateUserDepartment(user.id, e.target.value);
+                                addActivityLog({
+                                  userId: currentUser.id,
+                                  username: currentUser.username,
+                                  nama: currentUser.nama,
+                                  action: 'Update User',
+                                  details: `Admin ${currentUser.nama} memperbarui departemen ${user.nama} menjadi ${e.target.value}.`
+                                });
+                                setActionStatus({ message: `Departemen ${user.nama} diperbarui.`, type: 'success' });
+                                setTimeout(() => setActionStatus(null), 3000);
+                              }}
+                              className="text-xs font-bold bg-slate-50 border-none rounded-lg px-2 py-1 focus:ring-2 focus:ring-emerald-500"
+                            >
+                              <option value="">Pilih Departemen</option>
+                              {departments.map(d => (
+                                <option key={d.id} value={d.id}>{d.title}</option>
+                              ))}
+                            </select>
+                          </div>
                         ) : (
-                          <span className="text-xs font-medium text-slate-500">
-                            {user.department || '-'}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-100 px-2 py-1 rounded-lg border border-blue-200">
+                              Anggota
+                            </span>
+                            <span className="text-xs font-medium text-slate-500">
+                              {user.department || '-'}
+                            </span>
+                          </div>
                         )}
                       </td>
                     )}

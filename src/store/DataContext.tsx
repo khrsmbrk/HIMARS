@@ -136,6 +136,7 @@ export interface News {
   waktu: string;
   qrCode: string;
   coverImage?: string;
+  status?: 'Draft' | 'Published';
 }
 
 export interface Event {
@@ -312,6 +313,7 @@ export interface HomeSection {
 export interface WebsiteSettings {
   siteName: string;
   siteDescription: string;
+  periode: string;
   memberIdFormat: string; // e.g., "ORG-{YEAR}-{ID}"
   primaryColor: string;
   logoUrl: string;
@@ -694,10 +696,11 @@ const defaultData: DataState = {
   settings: {
     siteName: 'HIMARS',
     siteDescription: 'Himpunan Mahasiswa Program Studi Administrasi Rumah Sakit Universitas Muhammadiyah Lamongan',
+    periode: '2023/2024',
     memberIdFormat: 'ORG-{TIME}-{RAND}',
     primaryColor: '#f9a875',
     logoUrl: 'https://images.unsplash.com/photo-1599305090598-fe179d501c27?auto=format&fit=crop&w=200&q=80',
-    heroImageUrl: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80',
+    heroImageUrl: 'https://images.unsplash.com/photo-1551076805-e18690c5e561?auto=format&fit=crop&w=1200&q=80',
     heroTitle: 'Mewujudkan Administrator Kesehatan Masa Depan.',
     heroSubtitle: 'Wadah pengembangan diri dan kolaborasi mahasiswa Administrasi Rumah Sakit Universitas Muhammadiyah Lamongan untuk menjadi tenaga kesehatan profesional yang Islami.',
     visiMisiTitle: 'Mewujudkan Ekselensi dalam Administrasi RS.',
@@ -710,10 +713,10 @@ const defaultData: DataState = {
       'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=800&q=80'
     ],
-    strukturHeroImageUrl: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=1200&q=80',
-    blogHeroImageUrl: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80',
-    dokumenHeroImageUrl: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1200&q=80',
-    profilHeroImageUrl: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80',
+    strukturHeroImageUrl: 'https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80',
+    blogHeroImageUrl: 'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1200&q=80',
+    dokumenHeroImageUrl: 'https://images.unsplash.com/photo-1586281380349-632531db7ed4?auto=format&fit=crop&w=1200&q=80',
+    profilHeroImageUrl: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1200&q=80',
     kopSuratUrl: '',
     tandaTanganUrl: '',
     stempelUrl: '',
@@ -1024,6 +1027,7 @@ export const DataProvider: React.FC<{ children: React.ReactNode }> = ({ children
       tanggal: news.tanggal || now.toLocaleDateString('id-ID'),
       waktu: news.waktu || now.toLocaleTimeString('id-ID'),
       qrCode: `EVT-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`,
+      status: news.status || 'Published',
     };
     setData(prev => ({ ...prev, news: [newNews, ...prev.news] }));
   };

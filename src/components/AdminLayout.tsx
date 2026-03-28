@@ -362,11 +362,11 @@ export default function AdminLayout() {
                         }}
                         className={`flex items-center px-4 py-3.5 text-sm font-bold rounded-2xl transition-all duration-200 ${
                           isActive 
-                            ? 'bg-himars-peach text-white shadow-md shadow-himars-peach/20' 
+                            ? 'bg-orange-100 text-orange-600 shadow-sm' 
                             : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                         }`}
                       >
-                        <Icon className={`mr-3.5 h-5 w-5 transition-colors ${isActive ? 'text-white' : 'text-slate-400'}`} />
+                        <Icon className={`mr-3.5 h-5 w-5 transition-colors ${isActive ? 'text-orange-600' : 'text-slate-400'}`} />
                         <span className="tracking-wide">{item.name}</span>
                       </Link>
                     );
@@ -504,17 +504,25 @@ export default function AdminLayout() {
 
                 <AnimatePresence>
                   {showNotifications && (
-                    <>
-                      <div 
-                        className="fixed inset-0 z-40"
-                        onClick={() => setShowNotifications(false)}
-                      />
-                      <motion.div
-                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                        animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                        className="absolute right-0 mt-3 w-80 bg-white rounded-[2rem] shadow-2xl border border-slate-100 z-50 overflow-hidden"
-                      >
+                    <motion.div 
+                      key="notifications-backdrop"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="fixed inset-0 z-40"
+                      onClick={() => setShowNotifications(false)}
+                    />
+                  )}
+                </AnimatePresence>
+                <AnimatePresence>
+                  {showNotifications && (
+                    <motion.div
+                      key="notifications-panel"
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      className="absolute right-0 mt-3 w-80 bg-white rounded-[2rem] shadow-2xl border border-slate-100 z-50 overflow-hidden"
+                    >
                         <div className="p-6 border-b border-slate-50 bg-slate-50/50">
                           <h3 className="text-sm font-black text-slate-900 uppercase tracking-tight">Notifikasi Internal</h3>
                           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
@@ -560,7 +568,6 @@ export default function AdminLayout() {
                           </div>
                         )}
                       </motion.div>
-                    </>
                   )}
                 </AnimatePresence>
               </div>
@@ -578,10 +585,11 @@ export default function AdminLayout() {
 
               <button
                 onClick={handleLogout}
-                className="p-2.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100"
+                className="p-2.5 px-4 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all border border-transparent hover:border-red-100 flex items-center gap-2"
                 title="Keluar"
               >
                 <LogOut className="w-5 h-5" />
+                <span className="text-sm font-bold hidden sm:inline">Keluar</span>
               </button>
             </div>
           </header>

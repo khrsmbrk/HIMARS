@@ -37,8 +37,8 @@ export default function PublicLayout() {
                   />
                 </div>
                 <div className="flex flex-col">
-                  <span className="font-black text-2xl text-himars-dark leading-none tracking-tighter group-hover:text-himars-peach transition-colors uppercase">{data.settings.siteName}</span>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">UMLA</span>
+                  <span className="font-black text-xl sm:text-2xl text-himars-dark leading-none tracking-tighter group-hover:text-himars-peach transition-colors uppercase">{data.settings.siteName}</span>
+                  <span className="text-[8px] sm:text-[9px] font-bold text-slate-400 uppercase tracking-[0.2em] mt-1">UMLA</span>
                 </div>
               </Link>
             </div>
@@ -67,7 +67,7 @@ export default function PublicLayout() {
                               { id: 'ketua-wakil', title: 'Ketua & Wakil' },
                               { id: 'sekretaris', title: 'Sekretaris' },
                               { id: 'bendahara', title: 'Bendahara' },
-                              { id: 'paik', title: 'PENAK' },
+                              { id: 'penak', title: 'PENAK' },
                               { id: 'litbang', title: 'Litbang' },
                               { id: 'pengmas', title: 'PENGAPMAS' },
                               { id: 'medkom', title: 'Medkom' },
@@ -193,7 +193,7 @@ export default function PublicLayout() {
                           { id: 'ketua-wakil', title: 'Ketua & Wakil' },
                           { id: 'sekretaris', title: 'Sekretaris' },
                           { id: 'bendahara', title: 'Bendahara' },
-                          { id: 'paik', title: 'PENAK' },
+                          { id: 'penak', title: 'PENAK' },
                           { id: 'litbang', title: 'Litbang' },
                           { id: 'pengmas', title: 'PENGAPMAS' },
                           { id: 'medkom', title: 'Medkom' },

@@ -12,21 +12,17 @@ export default function NewsAdmin() {
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
   const editor = useRef(null);
 
+  const [isWriting, setIsWriting] = useState(false);
+
   const config = useMemo(() => ({
     readonly: false,
     placeholder: 'Isi berita...',
     height: 400,
     toolbarAdaptive: false,
     buttons: [
-      'source', '|',
-      'bold', 'strikethrough', 'underline', 'italic', '|',
+      'bold', 'italic', 'underline', '|',
       'ul', 'ol', '|',
-      'outdent', 'indent', '|',
-      'font', 'fontsize', 'brush', 'paragraph', '|',
-      'image', 'video', 'table', 'link', '|',
-      'align', 'undo', 'redo', '|',
-      'hr', 'eraser', 'copyformat', '|',
-      'symbol', 'fullsize', 'print', 'about'
+      'link', 'image'
     ]
   }), []);
   
@@ -39,7 +35,8 @@ export default function NewsAdmin() {
     isi: '',
     coverImage: '',
     tanggal: '',
-    waktu: ''
+    waktu: '',
+    status: 'Published' as 'Draft' | 'Published'
   });
 
   const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -83,7 +80,8 @@ export default function NewsAdmin() {
       isi: '', 
       coverImage: '',
       tanggal: '',
-      waktu: ''
+      waktu: '',
+      status: 'Published'
     });
   };
 
@@ -96,178 +94,206 @@ export default function NewsAdmin() {
           <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tight">Berita & Blog</h1>
           <p className="text-slate-500 font-bold uppercase tracking-widest text-[10px] mt-1">Kelola publikasi berita dan artikel organisasi</p>
         </div>
-        <AnimatePresence>
-          {actionStatus && (
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border shadow-xl ${
-                actionStatus.type === 'success' ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-red-50 border-red-100 text-red-600'
-              }`}
-            >
-              {actionStatus.message}
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <div className="flex items-center gap-4">
+          <AnimatePresence>
+            {actionStatus && (
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border shadow-xl ${
+                  actionStatus.type === 'success' ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-red-50 border-red-100 text-red-600'
+                }`}
+              >
+                {actionStatus.message}
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <button 
+            onClick={() => setIsWriting(!isWriting)}
+            className="px-4 py-2 bg-emerald-500 text-white rounded-xl font-bold flex items-center gap-2 hover:bg-emerald-600 transition-colors"
+          >
+            {isWriting ? <X className="w-4 h-4" /> : <PlusIcon className="w-4 h-4" />}
+            {isWriting ? 'Batal' : 'Tulis Artikel'}
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="glass-ios rounded-2xl shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 p-6 lg:col-span-1 h-fit">
-          <h2 className="text-lg font-bold text-slate-900 mb-4">Posting Berita Baru</h2>
-          
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Judul Berita</label>
-              <input
-                type="text"
-                required
-                value={formData.judul}
-                onChange={(e) => setFormData({...formData, judul: e.target.value})}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
-                placeholder="Masukkan judul"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Kategori</label>
-              <select
-                value={formData.kategori}
-                onChange={(e) => setFormData({...formData, kategori: e.target.value})}
-                className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
-              >
-                <option value="pengumuman">Pengumuman</option>
-                <option value="prestasi">Prestasi</option>
-                <option value="info">Info Umum</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">Isi Berita</label>
-              <div className="glass-ios">
-                <JoditEditor
-                  ref={editor}
-                  value={formData.isi}
-                  config={config}
-                  onBlur={newContent => setFormData({...formData, isi: newContent})}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-4 pt-2">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Foto Thumbnail / Sampul (Horizontal)</label>
-                {formData.coverImage ? (
-                  <div className="relative rounded-xl overflow-hidden aspect-video mb-2 border border-slate-200">
-                    <img src={formData.coverImage || undefined} className="w-full h-full object-cover" alt="Cover preview" />
+      <div className="glass-ios rounded-2xl shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 p-6">
+        <h2 className="text-lg font-bold text-slate-900 mb-4">Daftar Berita</h2>
+        
+        {newsList.length === 0 ? (
+          <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-xl">
+            <p className="text-slate-500">Belum ada berita yang dipublikasikan</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {newsList.map((news) => (
+              <div key={news.id} className="bg-slate-50 rounded-xl border border-slate-100 p-5 hover:border-emerald-500/30 transition-colors">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="text-lg font-bold text-slate-900 line-clamp-1">{news.judul}</h3>
+                  <div className="flex items-center gap-2">
                     <button 
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, coverImage: '' }))}
-                      className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
+                      onClick={() => {
+                        setItemToDelete(news.id);
+                        setIsDeleteModalOpen(true);
+                      }}
+                      className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors shrink-0"
+                      title="Hapus"
                     >
-                      <X className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
-                ) : (
-                  <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
+                </div>
+                
+                <div className="flex items-center text-xs text-slate-500 mb-3 space-x-4">
+                  <span className={`capitalize px-2 py-0.5 rounded font-medium ${news.status === 'Draft' ? 'bg-amber-500/10 text-amber-600' : 'bg-emerald-500/10 text-emerald-500'}`}>
+                    {news.status || 'Published'}
+                  </span>
+                  <span className="capitalize bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-medium">
+                    {news.kategori}
+                  </span>
+                  <div className="flex items-center">
+                    <Calendar className="w-3.5 h-3.5 mr-1" />
+                    {news.tanggal}
+                  </div>
+                </div>
+                
+                <p className="text-sm text-slate-600 line-clamp-2">
+                  {news.isi.replace(/<[^>]*>/g, '')}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <AnimatePresence>
+        {isWriting && (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            className="glass-ios rounded-2xl shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 p-6"
+          >
+            <h2 className="text-lg font-bold text-slate-900 mb-4">Posting Berita Baru</h2>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Judul Berita</label>
+                <input
+                  type="text"
+                  required
+                  value={formData.judul}
+                  onChange={(e) => setFormData({...formData, judul: e.target.value})}
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
+                  placeholder="Masukkan judul"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Kategori</label>
+                  <select
+                    value={formData.kategori}
+                    onChange={(e) => setFormData({...formData, kategori: e.target.value})}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
+                  >
+                    <option value="pengumuman">Pengumuman</option>
+                    <option value="prestasi">Prestasi</option>
+                    <option value="info">Info Umum</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                  <select
+                    value={formData.status}
+                    onChange={(e) => setFormData({...formData, status: e.target.value as 'Draft' | 'Published'})}
+                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
+                  >
+                    <option value="Published">Published</option>
+                    <option value="Draft">Draft</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">Isi Berita</label>
+                <div className="glass-ios">
+                  <JoditEditor
+                    ref={editor}
+                    value={formData.isi}
+                    config={config}
+                    onBlur={newContent => setFormData({...formData, isi: newContent})}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-2">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">Foto Thumbnail / Sampul (Horizontal)</label>
+                  <label className="flex flex-col items-center justify-center w-full max-w-md h-32 border-2 border-slate-300 border-dashed rounded-xl cursor-pointer hover:bg-slate-50 transition-colors">
                     <ImageIcon className="w-8 h-8 text-slate-400 mb-2" />
                     <span className="text-xs text-slate-500">Upload Thumbnail / Cover</span>
                     <input type="file" className="hidden" accept="image/*" onChange={handleCoverUpload} />
                   </label>
-                )}
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Jadwal Publish (Tanggal)</label>
-                  <input
-                    type="date"
-                    value={formData.tanggal}
-                    onChange={(e) => setFormData({...formData, tanggal: e.target.value})}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
-                  />
-                  <p className="text-[10px] text-slate-500 mt-1">Kosongkan untuk publish sekarang</p>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-1">Jadwal Publish (Waktu)</label>
-                  <input
-                    type="time"
-                    value={formData.waktu}
-                    onChange={(e) => setFormData({...formData, waktu: e.target.value})}
-                    className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex gap-2 mt-4">
-              <button
-                type="button"
-                onClick={() => setIsPreviewOpen(true)}
-                className="w-1/3 py-2.5 px-4 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 font-medium transition-colors"
-              >
-                Preview
-              </button>
-              <button
-                type="submit"
-                className="w-2/3 py-2.5 px-4 bg-emerald-500 text-white rounded-lg hover:bg-emerald-500/90 font-medium transition-colors"
-              >
-                Publikasikan
-              </button>
-            </div>
-          </form>
-        </div>
-
-        <div className="glass-ios rounded-2xl shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 p-6 lg:col-span-2">
-          <h2 className="text-lg font-bold text-slate-900 mb-4">Daftar Berita</h2>
-          
-          {newsList.length === 0 ? (
-            <div className="text-center py-12 border-2 border-dashed border-slate-200 rounded-xl">
-              <p className="text-slate-500">Belum ada berita yang dipublikasikan</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {newsList.map((news) => (
-                <div key={news.id} className="bg-slate-50 rounded-xl border border-slate-100 p-5 hover:border-emerald-500/30 transition-colors">
-                  <div className="flex justify-between items-start mb-2">
-                    <h3 className="text-lg font-bold text-slate-900 line-clamp-1">{news.judul}</h3>
-                    <div className="flex items-center gap-2">
+                  {formData.coverImage && (
+                    <div className="relative rounded-xl overflow-hidden aspect-video mt-4 border border-slate-200 max-w-md">
+                      <img src={formData.coverImage || undefined} className="w-full h-full object-cover" alt="Cover preview" />
                       <button 
-                        onClick={() => {
-                          setItemToDelete(news.id);
-                          setIsDeleteModalOpen(true);
-                        }}
-                        className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors shrink-0"
-                        title="Hapus"
+                        type="button"
+                        onClick={() => setFormData(prev => ({ ...prev, coverImage: '' }))}
+                        className="absolute top-2 right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600"
                       >
-                        <Trash2 className="w-4 h-4" />
+                        <X className="w-4 h-4" />
                       </button>
                     </div>
-                  </div>
-                  
-                  <div className="flex items-center text-xs text-slate-500 mb-3 space-x-4">
-                    <span className="capitalize bg-emerald-500/10 text-emerald-500 px-2 py-0.5 rounded font-medium">
-                      {news.kategori}
-                    </span>
-                    <div className="flex items-center">
-                      <Calendar className="w-3.5 h-3.5 mr-1" />
-                      {news.tanggal}
-                    </div>
-                    <div className="flex items-center">
-                      <Clock className="w-3.5 h-3.5 mr-1" />
-                      {news.waktu}
-                    </div>
-                  </div>
-                  
-                  <p className="text-sm text-slate-600 line-clamp-2">
-                    {news.isi.replace(/<[^>]*>/g, '')}
-                  </p>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-md">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Jadwal Publish (Tanggal)</label>
+                    <input
+                      type="date"
+                      value={formData.tanggal}
+                      onChange={(e) => setFormData({...formData, tanggal: e.target.value})}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
+                    />
+                    <p className="text-[10px] text-slate-500 mt-1">Kosongkan untuk publish sekarang</p>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 mb-1">Jadwal Publish (Waktu)</label>
+                    <input
+                      type="time"
+                      value={formData.waktu}
+                      onChange={(e) => setFormData({...formData, waktu: e.target.value})}
+                      className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-2 mt-4 max-w-md">
+                <button
+                  type="button"
+                  onClick={() => setIsPreviewOpen(true)}
+                  className="w-1/3 py-2.5 px-4 bg-slate-100 text-slate-700 rounded-lg hover:bg-slate-200 font-medium transition-colors"
+                >
+                  Preview
+                </button>
+                <button
+                  type="submit"
+                  className="w-2/3 py-2.5 px-4 bg-emerald-500 text-white rounded-lg hover:bg-emerald-500/90 font-medium transition-colors"
+                >
+                  Publikasikan
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Delete Confirmation Modal */}
       <ConfirmModal
         isOpen={isDeleteModalOpen}

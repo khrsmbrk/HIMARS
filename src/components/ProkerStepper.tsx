@@ -40,11 +40,11 @@ export default function ProkerStepper({ currentStage, onChangeStage }: ProkerSte
         const isActive = index === currentIndex;
 
         return (
-          <div key={stage} className="flex flex-col items-center relative z-10 bg-white px-2">
+          <div key={stage} className="flex flex-col items-center relative z-10 bg-white px-1">
             <button
               onClick={() => handleStageClick(stage, index)}
               disabled={!onChangeStage}
-              className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-[10px] sm:text-xs font-bold transition-all ${
+              className={`w-5 h-5 sm:w-7 sm:h-7 rounded-full flex items-center justify-center text-[9px] sm:text-[10px] font-bold transition-all ${
                 isCompleted
                   ? 'bg-emerald-500 text-white hover:bg-emerald-600 cursor-pointer'
                   : isActive
@@ -54,9 +54,9 @@ export default function ProkerStepper({ currentStage, onChangeStage }: ProkerSte
                   : 'bg-slate-100 text-slate-400 cursor-not-allowed'
               }`}
             >
-              {isCompleted ? <Check className="w-4 h-4" /> : index + 1}
+              {isCompleted ? <Check className="w-3 h-3" /> : index + 1}
             </button>
-            <span className={`mt-1 sm:mt-2 text-[7px] sm:text-[9px] font-black uppercase tracking-wider text-center leading-tight w-16 sm:w-20 ${
+            <span className={`mt-1 sm:mt-2 text-[6px] sm:text-[8px] font-black uppercase tracking-wider text-center leading-tight w-12 sm:w-16 ${
               isActive ? 'text-himars-peach' : isCompleted ? 'text-emerald-500' : 'text-slate-400'
             }`}>
               {stage}

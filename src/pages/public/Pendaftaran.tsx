@@ -86,9 +86,9 @@ export default function Pendaftaran() {
     setIsSubmitted(true);
   };
 
-  if (!formSettings || !isRegistrationOpen()) {
+  if (!formSettings || !isRegistrationOpen() || !formSettings.fields || formSettings.fields.length === 0) {
     return (
-      <div className="min-h-screen bg-slate-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8 font-sans flex items-center justify-center">
+      <div className="min-h-[calc(100vh-80px)] bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 font-sans flex items-center justify-center">
         <div className="max-w-md w-full text-center space-y-6">
           <div className="w-20 h-20 bg-slate-200 rounded-full flex items-center justify-center mx-auto mb-6">
             <Calendar className="w-10 h-10 text-slate-400" />
@@ -104,7 +104,7 @@ export default function Pendaftaran() {
 
   if (isSubmitted) {
     return (
-      <div className="min-h-screen bg-slate-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8 font-sans flex items-center justify-center">
+      <div className="min-h-[calc(100vh-80px)] bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 font-sans flex items-center justify-center">
         <motion.div 
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -133,7 +133,7 @@ export default function Pendaftaran() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 pt-24 pb-12 px-4 sm:px-6 lg:px-8 font-sans">
+    <div className="min-h-[calc(100vh-80px)] bg-slate-50 py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="max-w-3xl mx-auto space-y-12">
         {/* Header Section */}
         <div className="text-center">

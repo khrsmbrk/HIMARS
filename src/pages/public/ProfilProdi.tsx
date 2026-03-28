@@ -24,7 +24,7 @@ export default function ProfilProdi() {
   return (
     <div className="bg-slate-50 min-h-screen pb-20 overflow-x-hidden font-sans text-slate-900 selection:bg-orange-500/30">
       {/* Header Section */}
-      <section ref={headerRef} className="relative py-40 overflow-hidden border-b border-slate-200">
+      <section ref={headerRef} className="relative min-h-[calc(100vh-80px)] flex items-center overflow-hidden border-b border-slate-200">
         <motion.div 
           style={{ y }}
           className="absolute inset-0 z-0"
@@ -37,18 +37,18 @@ export default function ProfilProdi() {
           />
           <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-50"></div>
         </motion.div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="max-w-4xl"
           >
-            <span className="inline-block text-orange-500 font-bold tracking-[0.3em] uppercase text-sm mb-6 border-l-2 border-orange-500 pl-4">
+            <span className="inline-block text-himars-peach font-bold tracking-[0.3em] uppercase text-sm mb-6 border-l-2 border-himars-peach pl-4">
               Identitas Kami
             </span>
-            <h1 className="text-5xl md:text-7xl font-black mb-8 leading-tight tracking-tighter uppercase text-slate-900">Profil Program Studi</h1>
-            <p className="text-2xl text-slate-600 font-light leading-relaxed max-w-2xl">
+            <h1 className="text-4xl md:text-6xl font-black mb-6 leading-tight tracking-tighter uppercase text-slate-900">Profil Program Studi</h1>
+            <p className="text-xl md:text-2xl text-slate-600 font-light leading-relaxed max-w-2xl">
               S1 Administrasi Rumah Sakit - Fakultas Ilmu Kesehatan
               <br />
               <span className="text-slate-900 font-medium">Universitas Muhammadiyah Lamongan</span>

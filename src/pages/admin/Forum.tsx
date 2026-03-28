@@ -459,13 +459,17 @@ export default function Forum() {
                           >
                             <ImageIcon className="h-4 w-4" />
                           </button>
-                          <input 
-                            type="text"
+                          <textarea 
                             value={replyText}
                             onChange={(e) => setReplyText(e.target.value)}
                             placeholder="Tulis balasan..."
-                            className="flex-1 bg-slate-50 border border-slate-100 rounded-xl px-4 py-2 text-sm outline-none focus:border-himars-peach transition-all"
-                            onKeyDown={(e) => e.key === 'Enter' && handleReply(post.id)}
+                            className="flex-1 bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm outline-none focus:border-himars-peach transition-all min-h-[80px] resize-y"
+                            onKeyDown={(e) => {
+                              if (e.key === 'Enter' && !e.shiftKey) {
+                                e.preventDefault();
+                                handleReply(post.id);
+                              }
+                            }}
                           />
                           <button 
                             onClick={() => handleReply(post.id)}

@@ -18,7 +18,7 @@ export default function Blog() {
   return (
     <div className="bg-slate-50 min-h-screen pb-24 overflow-x-hidden text-slate-900 selection:bg-orange-500/30">
       {/* Cinematic Header */}
-      <section className="relative py-32 overflow-hidden border-b border-slate-200">
+      <section className="relative min-h-[calc(100vh-80px)] flex items-center overflow-hidden border-b border-slate-200">
         <div className="absolute inset-0 z-0">
           <img 
             src={data.settings.blogHeroImageUrl || undefined}
@@ -26,33 +26,30 @@ export default function Blog() {
             className="w-full h-full object-cover opacity-20"
             referrerPolicy="no-referrer"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0a0a0a]"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-slate-50"></div>
         </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-12">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             className="text-center max-w-3xl mx-auto"
           >
-            <span className="inline-block text-orange-500 font-bold tracking-[0.3em] uppercase text-xs mb-6">
-              Wawasan & Cerita
-            </span>
-            <h1 className="text-5xl md:text-7xl font-black mb-8 leading-tight tracking-tighter uppercase text-slate-900">Berita</h1>
+            <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight tracking-tighter uppercase text-slate-900">Berita</h1>
             <p className="text-xl text-slate-600 font-light mb-12">
               Informasi terbaru, kegiatan, dan artikel seputar {data.settings.siteName}.
             </p>
 
             <div className="relative max-w-xl mx-auto">
               <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-slate-500" />
+                <Search className="h-5 w-5 text-slate-600" />
               </div>
               <input
                 type="text"
                 placeholder="Cari berita atau artikel..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="block w-full pl-14 pr-6 py-5 bg-white border border-slate-200 rounded-full text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all outline-none"
+                className="block w-full pl-14 pr-6 py-5 glass-ios text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-himars-peach focus:border-himars-peach transition-all outline-none rounded-full"
               />
             </div>
           </motion.div>

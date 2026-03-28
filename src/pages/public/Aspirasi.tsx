@@ -36,18 +36,12 @@ export default function Aspirasi() {
   };
 
   return (
-    <div className="pt-32 pb-24 min-h-screen bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center max-w-3xl mx-auto mb-16">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="w-20 h-20 bg-orange-500/10 rounded-3xl flex items-center justify-center mx-auto mb-6 transform rotate-3 border border-orange-500/20"
-          >
-            <MessageSquare className="w-10 h-10 text-orange-500" />
-          </motion.div>
+    <div className="min-h-[calc(100vh-80px)] flex items-center py-12 bg-slate-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+        <div className="text-center max-w-3xl mx-auto mb-12">
           <motion.h1 
             initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="text-4xl md:text-5xl font-black text-slate-900 uppercase tracking-tighter mb-6"
+            className="text-4xl md:text-5xl font-black text-slate-900 uppercase tracking-tighter mb-4"
           >
             Kotak Aspirasi
           </motion.h1>
@@ -67,59 +61,64 @@ export default function Aspirasi() {
           >
             <div className="absolute top-0 right-0 w-64 h-64 bg-orange-500/5 rounded-bl-full -z-10"></div>
             
-            {submitted ? (
-              <div className="h-full flex flex-col items-center justify-center text-center py-12">
-                <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mb-6 border border-emerald-500/20">
-                  <CheckCircle className="w-10 h-10 text-emerald-500" />
-                </div>
-                <h3 className="text-2xl font-black text-slate-900 uppercase tracking-tight mb-2">Aspirasi Terkirim!</h3>
-                <p className="text-slate-600">Terima kasih atas masukan Anda. Aspirasi Anda akan segera diproses oleh pengurus HIMARS.</p>
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Tulis Aspirasi</h3>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={isAnonim} onChange={(e) => setIsAnonim(e.target.checked)} className="rounded border-slate-300 bg-slate-50 text-orange-500 focus:ring-orange-500 focus:ring-offset-white" />
+                  <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">Kirim Anonim</span>
+                </label>
               </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-xl font-black text-slate-900 uppercase tracking-tight">Tulis Aspirasi</h3>
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={isAnonim} onChange={(e) => setIsAnonim(e.target.checked)} className="rounded border-slate-300 bg-slate-50 text-orange-500 focus:ring-orange-500 focus:ring-offset-white" />
-                    <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">Kirim Anonim</span>
-                  </label>
-                </div>
 
-                <AnimatePresence>
-                  {!isAnonim && (
-                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Nama Lengkap</label>
-                        <input type="text" required={!isAnonim} value={formData.nama} onChange={e => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent font-bold text-sm text-slate-900 placeholder-slate-400" placeholder="Nama Anda" />
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">NIM</label>
-                        <input type="text" required={!isAnonim} value={formData.nim} onChange={e => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent font-bold text-sm text-slate-900 placeholder-slate-400" placeholder="NIM Anda" />
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
+              <AnimatePresence>
+                {!isAnonim && (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Nama Lengkap</label>
+                      <input type="text" required={!isAnonim} value={formData.nama} onChange={e => setFormData({...formData, nama: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent font-bold text-sm text-slate-900 placeholder-slate-400" placeholder="Nama Anda" />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">NIM</label>
+                      <input type="text" required={!isAnonim} value={formData.nim} onChange={e => setFormData({...formData, nim: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent font-bold text-sm text-slate-900 placeholder-slate-400" placeholder="NIM Anda" />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-                <div>
-                  <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Kategori</label>
-                  <select value={formData.kategori} onChange={e => setFormData({...formData, kategori: e.target.value as any})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent font-bold text-sm text-slate-900">
-                    <option value="Akademik">Akademik & Perkuliahan</option>
-                    <option value="Fasilitas">Fasilitas Kampus</option>
-                    <option value="Organisasi">Kegiatan Organisasi</option>
-                    <option value="Lainnya">Lainnya</option>
-                  </select>
-                </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Kategori</label>
+                <select value={formData.kategori} onChange={e => setFormData({...formData, kategori: e.target.value as any})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent font-bold text-sm text-slate-900">
+                  <option value="Akademik">Akademik & Perkuliahan</option>
+                  <option value="Fasilitas">Fasilitas Kampus</option>
+                  <option value="Organisasi">Kegiatan Organisasi</option>
+                  <option value="Lainnya">Lainnya</option>
+                </select>
+              </div>
 
-                <div>
-                  <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Pesan Aspirasi</label>
-                  <textarea required value={formData.pesan} onChange={e => setFormData({...formData, pesan: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent font-bold text-sm text-slate-900 min-h-[150px] placeholder-slate-400" placeholder="Sampaikan aspirasi Anda secara jelas dan sopan..." />
-                </div>
+              <div>
+                <label className="block text-[10px] font-black text-slate-500 uppercase tracking-[0.2em] mb-2">Pesan Aspirasi</label>
+                <textarea required value={formData.pesan} onChange={e => setFormData({...formData, pesan: e.target.value})} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-orange-500 focus:border-transparent font-bold text-sm text-slate-900 min-h-[150px] placeholder-slate-400" placeholder="Sampaikan aspirasi Anda secara jelas dan sopan..." />
+              </div>
 
+              <div className="flex flex-col items-center gap-4">
                 <button type="submit" className="w-full py-4 bg-orange-500 text-white rounded-2xl font-black uppercase tracking-[0.2em] text-xs hover:bg-orange-600 transition-all flex items-center justify-center gap-2">
                   <Send className="w-4 h-4" /> Kirim Aspirasi
                 </button>
-              </form>
-            )}
+                
+                <AnimatePresence>
+                  {submitted && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: -10 }} 
+                      animate={{ opacity: 1, y: 0 }} 
+                      exit={{ opacity: 0, y: -10 }}
+                      className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-full text-sm font-bold"
+                    >
+                      <CheckCircle className="w-4 h-4" /> Terima kasih, aspirasi Anda telah terkirim!
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </form>
           </motion.div>
         </div>
       </div>

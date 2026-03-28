@@ -215,7 +215,7 @@ export default function AlumniAdmin() {
                   </div>
                   <div>
                     <label className="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Tahun Lulus</label>
-                    <input type="text" value={formData.tahunLulus} onChange={e => setFormData({...formData, tahunLulus: e.target.value})} className="w-full px-4 py-3 bg-slate-50/50 border-none rounded-2xl focus:ring-2 focus:ring-himars-peach font-bold text-sm" placeholder="2023" />
+                    <input type="number" max={new Date().getFullYear()} value={formData.tahunLulus} onChange={e => setFormData({...formData, tahunLulus: e.target.value})} className="w-full px-4 py-3 bg-slate-50/50 border-none rounded-2xl focus:ring-2 focus:ring-himars-peach font-bold text-sm" placeholder="2023" />
                   </div>
                 </div>
                 <div>

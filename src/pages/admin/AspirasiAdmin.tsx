@@ -131,8 +131,8 @@ export default function AspirasiAdmin() {
                     </button>
                   )}
                   {item.status !== 'Selesai' && (
-                    <button onClick={() => { setSelectedAspirasi(item.id); setShowTanggapanModal(true); }} className="px-4 py-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
-                      Tanggapi & Selesai
+                    <button onClick={() => { setSelectedAspirasi(item.id); setShowTanggapanModal(true); }} className="px-4 py-2 bg-himars-peach text-white hover:bg-himars-peach/90 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-himars-peach/20 flex items-center gap-2">
+                      <MessageCircle className="w-3 h-3" /> Tanggapi & Selesai
                     </button>
                   )}
                   <button 
@@ -162,7 +162,7 @@ export default function AspirasiAdmin() {
             />
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.9, opacity: 0, y: 20 }}
-              className="relative glass-ios rounded-[3rem] p-10 max-w-md w-full shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 overflow-hidden max-h-[90vh] overflow-y-auto"
+              className="relative glass-ios rounded-[3rem] p-10 max-w-2xl w-full shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] border border-white/40 overflow-hidden max-h-[90vh] overflow-y-auto"
             >
               <h3 className="text-2xl font-black text-himars-dark uppercase tracking-tight mb-6">Berikan Tanggapan</h3>
               <form onSubmit={handleTanggapanSubmit} className="space-y-4">

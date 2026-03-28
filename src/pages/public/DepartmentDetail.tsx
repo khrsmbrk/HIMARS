@@ -27,7 +27,7 @@ const departmentInfo: Record<string, { title: string, description: string, icon:
     color: 'bg-orange-500',
     prompt: 'Indonesian university student wearing olive green uniform shirt, calculating finances with a calculator and laptop. High quality, cinematic lighting, realistic, photography.'
   },
-  'paik': {
+  'penak': {
     title: 'PENAK',
     description: 'Bidang Pengkaderan, Pendidikan Agama Islam, dan Kemuhammadiyahan.',
     icon: Users,

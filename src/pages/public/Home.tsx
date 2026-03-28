@@ -14,7 +14,8 @@ import {
   Newspaper,
   FileText,
   ShieldCheck,
-  Award
+  Award,
+  Calendar
 } from 'lucide-react';
 
 export default function Home() {
@@ -51,42 +52,42 @@ export default function Home() {
     switch (sectionId) {
       case 'hero':
         return (
-          <section key="hero" className="relative min-h-screen flex items-center overflow-hidden bg-transparent pt-20">
+          <section key="hero" className="relative min-h-[calc(100vh-80px)] flex items-center overflow-hidden bg-slate-900">
             <motion.div style={{ y: yHero, opacity: opacityHero }} className="absolute inset-0 z-0">
               <img 
                 src={data.settings.heroImageUrl || undefined}
                 alt="Hero Background"
-                className="w-full h-full object-cover opacity-30"
+                className="w-full h-full object-cover opacity-60"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-white via-white/80 to-transparent"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/60 to-transparent"></div>
             </motion.div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-20 flex flex-col md:flex-row items-center justify-between gap-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full py-12 flex flex-col md:flex-row items-center justify-between gap-8">
               <motion.div 
                 initial={{ opacity: 0, x: -50 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 1, ease: "easeOut" }}
                 className="max-w-2xl flex flex-col items-start text-left"
               >
-                <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-slate-900 leading-[1.1] tracking-tighter mb-8">
-                  Inovasi dalam <span className="text-orange-500">Manajemen</span>,<br />
-                  Empati dalam <span className="text-orange-500">Pelayanan</span>.
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tighter mb-6">
+                  Inovasi dalam <span className="text-himars-peach">Manajemen</span>,<br />
+                  Empati dalam <span className="text-himars-peach">Pelayanan</span>.
                 </h1>
-                <p className="text-lg md:text-xl text-slate-600 font-medium mb-12 max-w-xl leading-relaxed">
+                <p className="text-base md:text-lg text-slate-300 font-medium mb-8 max-w-xl leading-relaxed">
                   HIMARS Universitas Muhammadiyah Lamongan hadir sebagai wadah pengembangan mahasiswa Administrasi Rumah Sakit yang unggul, terintegrasi dengan nilai-nilai keislaman dan inovasi layanan kesehatan terkini.
                 </p>
                 <div className="flex flex-wrap justify-start gap-4">
                   <Link 
                     to="/blog" 
-                    className="group inline-flex items-center justify-center px-8 py-4 bg-orange-600 text-white rounded-full font-bold text-sm shadow-lg shadow-orange-600/20 hover:bg-orange-700 transition-all active:scale-95"
+                    className="group inline-flex items-center justify-center px-6 py-3 bg-himars-peach text-slate-900 rounded-full font-bold text-sm shadow-lg shadow-orange-600/20 hover:bg-orange-400 transition-all active:scale-95"
                   >
                     Lihat Kegiatan
                     <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <Link 
                     to="/profil" 
-                    className="inline-flex items-center justify-center px-8 py-4 bg-slate-100 text-slate-900 rounded-full font-bold text-sm border border-slate-200 shadow-sm hover:bg-slate-200 transition-all active:scale-95 backdrop-blur-sm"
+                    className="inline-flex items-center justify-center px-6 py-3 bg-slate-100 text-slate-900 rounded-full font-bold text-sm border border-slate-200 shadow-sm hover:bg-slate-200 transition-all active:scale-95 backdrop-blur-sm"
                   >
                     Tentang Kami
                   </Link>
@@ -287,13 +288,6 @@ export default function Home() {
                             {pillar.title}
                           </h3>
                         </div>
-                        
-                        {/* Big Number */}
-                        <div className="absolute top-8 left-1/2 -translate-x-1/2 group-hover:left-8 group-hover:translate-x-0 transition-all duration-500">
-                          <span className="text-4xl md:text-6xl font-black text-white/30 group-hover:text-white/50">
-                            0{index + 1}
-                          </span>
-                        </div>
                       </div>
                     </Link>
                   </motion.div>
@@ -382,8 +376,10 @@ export default function Home() {
                     </div>
                   </motion.div>
                 )) : (
-                  <div className="md:col-span-2 md:row-span-2 flex items-center justify-center glass-ios border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] rounded-[2.5rem] p-10">
-                    <p className="text-slate-500 font-bold uppercase tracking-widest text-sm">Belum ada acara mendatang.</p>
+                  <div className="md:col-span-2 md:row-span-2 flex flex-col items-center justify-center glass-ios border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.07)] rounded-[2.5rem] p-10 text-center">
+                    <Calendar className="w-12 h-12 text-slate-300 mb-4" />
+                    <p className="text-slate-500 font-medium text-lg">Belum ada acara mendatang.</p>
+                    <p className="text-slate-400 text-sm mt-2">Pantau terus website kami untuk informasi acara selanjutnya.</p>
                   </div>
                 )}
               </div>

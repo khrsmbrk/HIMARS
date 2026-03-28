@@ -156,7 +156,7 @@ export default function DriveAdmin() {
   };
 
   const getFileIcon = (item: DriveItem) => {
-    if (item.type === 'folder') return <Folder className="w-10 h-10 text-amber-400 fill-amber-400" />;
+    if (item.type === 'folder') return <Folder className="w-10 h-10 text-yellow-500 fill-yellow-500" />;
     
     const name = item.name.toLowerCase();
     const mime = item.mimeType?.toLowerCase() || '';
@@ -224,7 +224,7 @@ export default function DriveAdmin() {
                         onClick={() => { setIsNewMenuOpen(false); setNewItemType('folder'); setIsCreateModalOpen(true); }}
                         className="w-full px-4 py-3 text-left text-sm font-bold text-slate-600 hover:bg-slate-50 flex items-center gap-3"
                       >
-                        <FolderPlus className="w-5 h-5 text-amber-400" /> Folder Baru
+                        <FolderPlus className="w-5 h-5 text-yellow-500" /> Folder Baru
                       </button>
                       <div className="h-px bg-slate-100 my-1" />
                       <button 
@@ -537,7 +537,7 @@ export default function DriveAdmin() {
                     >
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          {item.type === 'folder' ? <Folder className="w-5 h-5 text-amber-400" /> : <File className="w-5 h-5 text-slate-400" />}
+                          {item.type === 'folder' ? <Folder className="w-5 h-5 text-yellow-500 fill-yellow-500" /> : <File className="w-5 h-5 text-slate-400" />}
                           <span className="text-sm font-bold text-himars-dark">{item.name}</span>
                         </div>
                       </td>
@@ -706,7 +706,7 @@ export default function DriveAdmin() {
                     onClick={() => { moveDriveItem(itemToManage.id, folder.id); setIsMoveModalOpen(false); }}
                     className="w-full p-4 rounded-2xl border border-slate-100 hover:border-himars-peach hover:bg-himars-peach/5 transition-all text-left flex items-center gap-3"
                   >
-                    <Folder className="w-5 h-5 text-amber-400" />
+                    <Folder className="w-5 h-5 text-yellow-500 fill-yellow-500" />
                     <span className="text-sm font-bold text-slate-700">{folder.name}</span>
                   </button>
                 ))}

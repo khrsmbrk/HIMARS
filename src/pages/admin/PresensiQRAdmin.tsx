@@ -407,14 +407,14 @@ export default function PresensiQRAdmin() {
                   <button 
                     onClick={exportToCSV}
                     disabled={filteredPresensi.length === 0}
-                    className="flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-blue-100 transition-all border border-blue-100 disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20 disabled:opacity-50"
                   >
                     <Download className="w-3 h-3" /> Export CSV
                   </button>
                   <button 
                     onClick={exportToPDF}
                     disabled={filteredPresensi.length === 0}
-                    className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-emerald-100 transition-all border border-emerald-100 disabled:opacity-50"
+                    className="flex items-center gap-2 px-4 py-2 bg-himars-peach text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-himars-peach/90 transition-all shadow-lg shadow-himars-peach/20 disabled:opacity-50"
                   >
                     <Download className="w-3 h-3" /> Export PDF
                   </button>

@@ -994,7 +994,7 @@ const KanbanColumn = React.memo<{
       <div 
         ref={setNodeRef}
         className={`flex-1 rounded-[2rem] p-4 transition-all ${
-          isOver ? 'bg-blue-50/50 border-2 border-dashed border-blue-200' : 'bg-slate-50/30 border border-transparent'
+          isOver ? 'bg-blue-50 border-2 border-dashed border-blue-400 shadow-inner' : 'bg-slate-50/30 border border-transparent'
         }`}
       >
         <SortableContext 
@@ -1015,9 +1015,9 @@ const KanbanColumn = React.memo<{
         </SortableContext>
         
         {prokers.length === 0 && !isOver && (
-          <div className="h-full flex flex-col items-center justify-center text-slate-300 py-12">
-            <Target className="w-8 h-8 mb-2 opacity-20" />
-            <p className="text-[10px] font-bold uppercase tracking-widest opacity-40">Kosong</p>
+          <div className="h-full flex flex-col items-center justify-center text-slate-400 py-12 border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50/50">
+            <Plus className="w-8 h-8 mb-2 text-slate-300" />
+            <p className="text-xs font-medium text-slate-400">Tarik proker ke sini</p>
           </div>
         )}
       </div>
@@ -1054,7 +1054,7 @@ const CalendarDay = React.memo<{
       className={`${view === 'calendar' ? 'min-h-[120px]' : 'aspect-square'} rounded-xl border p-1 transition-all relative group ${
         isToday ? 'border-emerald-500 bg-emerald-50/30' : 'border-slate-100'
       } ${
-        isOver ? 'bg-emerald-100 border-emerald-300 scale-[1.02] z-10 shadow-lg' : 'hover:bg-slate-50'
+        isOver ? 'bg-blue-50 border-2 border-dashed border-blue-400 shadow-inner scale-[1.02] z-10' : 'hover:bg-slate-50'
       }`}
     >
       <div className="flex justify-between items-center mb-1">
